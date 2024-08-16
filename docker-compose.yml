@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  sd_ui:
+    image: whiteboard/ui:dev
+    container_name: whiteboard_ui
+    ports:
+      - "80:80"
+    network_mode: "bridge"
+    privileged: false
+    restart: always

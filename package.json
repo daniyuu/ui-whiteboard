@@ -1,0 +1,33 @@
+{
+  "name": "ui-whiteboard",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vue-flow/background": "^1.3.0",
+    "@vue-flow/controls": "^1.1.2",
+    "@vue-flow/core": "^1.39.3",
+    "@vue-flow/minimap": "^1.5.0",
+    "add": "^2.0.6",
+    "axios": "^1.3.5",
+    "dayjs": "^1.11.5",
+    "highlight.js": "^11.10.0",
+    "less": "^4.2.0",
+    "less-loader": "^12.2.0",
+    "lodash": "^4.17.21",
+    "markdown-it": "^14.1.0",
+    "marked": "^14.0.0",
+    "nanoid": "^4.0.0",
+    "vue": "^3.4.37",
+    "vue-flow": "^0.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.0",
+    "vite": "^5.1.0"
+  }
+}
