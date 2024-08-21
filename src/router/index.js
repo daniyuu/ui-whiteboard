@@ -1,14 +1,14 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createWebHistory, createRouter } from 'vue-router'
 
 import HomePage from '../pages/HomePage.vue'
 import FlowPage from '../pages/FlowPage.vue'
 
 const routes = [
   { path: '/', component: HomePage },
-  { path: '/about', component: FlowPage },
+  { path: '/flow', component: FlowPage },
 ]
 
 export default createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory() ,
   routes,
 })

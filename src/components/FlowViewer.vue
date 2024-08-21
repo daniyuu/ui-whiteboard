@@ -11,7 +11,7 @@
             <template #node-bilibili-video="props">
                 <BiliBiliVideoNode :data="props.data" />
             </template>
-            <Background class="background" attern-color="#FFF" :gap="1000" />
+            <Background class="background" attern-color="#FFF" :gap="10" />
             <MiniMap />
         </VueFlow>
     </div>
@@ -135,6 +135,7 @@ function toggleDarkMode() {
 </script>
 <style>
 .basic-flow {
-    height: 1000px;
+    height: 100%;
+    width: 100%;
 }
 </style>
