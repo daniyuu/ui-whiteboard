@@ -2,10 +2,16 @@
   <div class="main-wrapper">
     <flowViewer></flowViewer>
     <div class="operation-layer">
-      <div class="left-panel"></div>
+      <div class="left-panel" ref="panel">
+        <div class="left-panel-header">
+          <div class="left-panel-title">Toolbox</div>
+          <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
+        </div>
+        <div class="left-panel-body"></div>
+      </div>
       <div class="right-side">
         <div class="fixed-bar side-bar">
-          <div class="action-item card-button">
+          <div class="action-item card-button" @click="handelShowPanel">
             <img src="/img/card.svg" width="24">
           </div>
           <div class="action-item"></div>
@@ -19,10 +25,12 @@
             <span>{{ title }}</span>
           </div>
           <div class=" action-item edit-btn">
-            <i class="bi bi-pencil" ></i>
+            <i class="bi bi-pencil"></i>
           </div>
-        <a-divider type="vertical" style="height: 32px;"></a-divider>
-
+          <a-divider type="vertical" style="height: 32px;"></a-divider>
+          <div class=" action-item shot-btn" @click="handleScreenShot">
+            <i class="bi bi-camera"></i>
+          </div>
         </div>
         <div class="fixed-bar zoom-bar"></div>
 
@@ -32,15 +40,54 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import flowViewer from '../components/FlowViewer.vue'
 import { useRouter } from 'vue-router';
+import { useFlowStore } from '../store/flowStore';
+import { useScreenshot } from"../components/useScreenShot"
+import {useVueFlow } from '@vue-flow/core';
+
+const { vueFlowRef } = useVueFlow();
+const flowStore = useFlowStore()
+const { capture } = useScreenshot()
+
 const router = useRouter()
 const handleJumpToHome = () => {
-    router.push('/')
+  router.push('/')
 }
+const panel = ref(null)
 
-const title = ref('Flow Viewer Flow Viewer Flow Viewer' )
+const title = ref('Flow Viewer Flow Viewer Flow Viewer')
+
+const showPanel = ref(false)
+const handleClosePanel = () => {
+  showPanel.value = false
+}
+const handelShowPanel = () => {
+  showPanel.value = !showPanel.value
+}
+const handleScreenShot = () => {
+  if (!vueFlowRef.value) {
+    console.warn('VueFlow element not found');
+    return;
+  }
+
+  capture(vueFlowRef.value, { shouldDownload: true });
+}
+watch(() => showPanel.value, (newVal) => {
+  if (newVal) {
+    if (document.body.clientWidth > 768) {
+      panel.value.style.width = '16%'
+    }
+    else {
+      panel.value.style.width = '200px'
+    }
+  }
+  else {
+    panel.value.style.width = '0px'
+
+  }
+})
 </script>
 <style lang="less" scoped>
 .main-wrapper {
@@ -57,11 +104,35 @@ const title = ref('Flow Viewer Flow Viewer Flow Viewer' )
     pointer-events: none;
 
     .left-panel {
-      min-width: 200px;
-      width: 16%;
+      width: 0px;
       pointer-events: all;
       height: 100%;
-      background-color: #f0f0f0;
+      overflow: hidden;
+      transition: ease-in-out 0.4s;
+      background-color: #fff;
+      box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+
+      .left-panel-header {
+        height: 64px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.1);
+
+
+        .close-btn {
+          margin-right: 8px;
+          cursor: pointer;
+          font-size: 24px;
+        }
+
+        .left-panel-title {
+          margin-left: 16px;
+          font-size: 20px;
+        }
+
+      }
     }
 
     .right-side {
@@ -86,6 +157,7 @@ const title = ref('Flow Viewer Flow Viewer Flow Viewer' )
         background-color: #fff;
         display: flex;
         flex-direction: column;
+
         .action-item {
           width: 40px;
           display: flex;
@@ -93,10 +165,12 @@ const title = ref('Flow Viewer Flow Viewer Flow Viewer' )
           justify-content: center;
           align-items: center;
           border-bottom: 1px solid #f0f0f0;
+
           &:last-child {
             border-bottom: none;
           }
         }
+
         .card-button {
           height: 48px;
           display: flex;
@@ -104,6 +178,7 @@ const title = ref('Flow Viewer Flow Viewer Flow Viewer' )
           align-items: center;
         }
       }
+
       .title-bar {
         height: 48px;
         top: 20px;
@@ -112,32 +187,48 @@ const title = ref('Flow Viewer Flow Viewer Flow Viewer' )
         left: 48px;
         align-items: center;
         background-color: #fff;
-        .return-home{
+
+        .return-home {
           width: 32px;
           height: 32px;
           display: flex;
           justify-content: center;
           align-items: center;
-          
+
         }
-        .action-item{
+
+        .action-item {
           width: 32px;
           border-radius: 4px;
           margin-left: 4px;
         }
-        .edit-btn{
+        .shot-btn {
           width: 32px;
           height: 32px;
           display: flex;
           justify-content: center;
           align-items: center;
         }
-        .edit-btn:hover{
+        .shot-btn:hover {
           background: #f0f0f0;
         }
-        .return-home:hover{
-            background: #f0f0f0;
-          }
+
+
+        .edit-btn {
+          width: 32px;
+          height: 32px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .edit-btn:hover {
+          background: #f0f0f0;
+        }
+
+        .return-home:hover {
+          background: #f0f0f0;
+        }
       }
     }
   }

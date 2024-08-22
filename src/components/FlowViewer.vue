@@ -1,6 +1,6 @@
 <template>
     <div class="basic-flow">
-        <VueFlow :dark="dark" :nodes="nodeData" :edges="edges" :class="{ dark }" :default-viewport="{ zoom: 1 }"
+        <VueFlow  :dark="dark" :nodes="nodeData" :edges="edges" :class="{ dark }" :default-viewport="{ zoom: 1 }"
             :min-zoom="0.2" :max-zoom="4">
             <template #node-form="props">
                 <FormNode :data="props.data" />
@@ -11,14 +11,14 @@
             <template #node-bilibili-video="props">
                 <BiliBiliVideoNode :data="props.data" />
             </template>
-            <Background class="background" attern-color="#FFF" :gap="10" />
+            <Background class="background" attern-color="#f0f0f0" :gap="10" />
             <MiniMap />
         </VueFlow>
     </div>
 
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref ,onMounted} from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { ControlButton, Controls } from '@vue-flow/controls'
@@ -26,11 +26,16 @@ import { MiniMap } from '@vue-flow/minimap'
 import FormNode from './FormNode.vue'
 import HumanTextNode from './HumanTextNode.vue'
 import BiliBiliVideoNode from './BiliBiliVideoNode.vue'
+import { useFlowStore } from '../store/flowStore'
+
+const store = useFlowStore()
 const { onInit, onNodeDragStop, onConnect, setViewport, toObject } = useVueFlow()
 const dark = ref(true)
 const triggerDark = () => {
     dark.value = !dark.value
 }
+
+
 const nodeData = ref([
     {
         id: '1',
@@ -137,5 +142,8 @@ function toggleDarkMode() {
 .basic-flow {
     height: 100%;
     width: 100%;
+}
+.background{
+    background-color: #f0f3f5;
 }
 </style>
