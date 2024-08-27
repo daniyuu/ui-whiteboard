@@ -1,7 +1,7 @@
 <template>
-    <div class="basic-flow">
-        <VueFlow  :dark="dark" :nodes="nodeData" :edges="edges" :class="{ dark }" :default-viewport="{ zoom: 1 }"
-            :min-zoom="0.2" :max-zoom="4">
+    <div class="basic-flow" @drop="onDrop">
+        <VueFlow :dark="dark" :nodes="nodeData" :edges="edges" @dragover="onDragOver" @dragleave="onDragLeave"
+            :class="{ dark }" :default-viewport="{ zoom: 1 }" :min-zoom="0.2" :max-zoom="4">
             <template #node-form="props">
                 <FormNode :data="props.data" />
             </template>
@@ -11,14 +11,19 @@
             <template #node-bilibili-video="props">
                 <BiliBiliVideoNode :data="props.data" />
             </template>
-            <Background class="background" attern-color="#f0f0f0" :gap="10" />
+            <DropzoneBackground class="background" :style="{
+                backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
+                transition: 'background-color 0.2s ease',
+            }">
+                <p v-if="isDragOver">Drop here</p>
+            </DropzoneBackground>
             <MiniMap />
         </VueFlow>
     </div>
 
 </template>
 <script setup>
-import { ref ,onMounted} from 'vue'
+import { ref, onMounted } from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { ControlButton, Controls } from '@vue-flow/controls'
@@ -27,9 +32,13 @@ import FormNode from './FormNode.vue'
 import HumanTextNode from './HumanTextNode.vue'
 import BiliBiliVideoNode from './BiliBiliVideoNode.vue'
 import { useFlowStore } from '../store/flowStore'
+import useDragAndDrop from './useDargAndDrop'
+
+const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 
 const store = useFlowStore()
-const { onInit, onNodeDragStop, onConnect, setViewport, toObject } = useVueFlow()
+const { onInit, onNodeDragStop, onConnect, setViewport, toObject, 
+    onNodesChange, applyNodeChanges, applyEdgeChange } = useVueFlow()
 const dark = ref(true)
 const triggerDark = () => {
     dark.value = !dark.value
@@ -47,8 +56,9 @@ const nodeData = ref([
     {
         id: '3',
         type: 'human-text',
-        data: { theamColor: 'red',
-        text:'你可以通过以下几种方法来查看LLVM的版本：\
+        data: {
+            theamColor: 'red',
+            text: '你可以通过以下几种方法来查看LLVM的版本：\
 1. **使用`llvm-config`命令**：\
    \n\`\`\`bash\n\
    llvm-config --version\
@@ -62,7 +72,8 @@ const nodeData = ref([
    llvm-as --version\
    \`\`\`\
 ',
-         backgroundColor: '#fff', textColor: 'Node 3', title: "100" },
+            backgroundColor: '#fff', textColor: 'Node 3', title: "100"
+        },
         position: { x: 10, y: 0 },
         class: 'light',
     },
@@ -104,6 +115,10 @@ onNodeDragStop(({ event, nodes, node }) => {
     console.log('Node Drag Stop', { event, nodes, node })
 })
 
+onNodesChange(async (changes) => {
+    applyNodeChanges(changes)
+})
+
 /**
  * To update a node or multiple nodes, you can
  * 1. Mutate the node objects *if* you're using `v-model`
@@ -143,7 +158,9 @@ function toggleDarkMode() {
     height: 100%;
     width: 100%;
 }
-.background{
-    background-color: #f0f3f5;
+
+.background {
+    width: 100%;
+    height: 100%;
 }
 </style>

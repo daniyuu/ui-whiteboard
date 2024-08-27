@@ -4,6 +4,8 @@ import { defineStore } from "pinia";
 export const useFlowStore = defineStore("flow", {
     state: () => {
         return {
+            nodes:[],
+            edges:[],
         }
     },
     actions: {

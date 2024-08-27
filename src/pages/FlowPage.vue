@@ -7,7 +7,10 @@
           <div class="left-panel-title">Toolbox</div>
           <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
         </div>
-        <div class="left-panel-body"></div>
+        <div class="left-panel-body">
+          <div class="drag-item" draggable="true"   @dragstart="onDragStart($event, 'bilibili-video')">card</div>
+
+        </div>
       </div>
       <div class="right-side">
         <div class="fixed-bar side-bar">
@@ -40,12 +43,15 @@
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch ,onMounted} from 'vue'
 import flowViewer from '../components/FlowViewer.vue'
 import { useRouter } from 'vue-router';
 import { useFlowStore } from '../store/flowStore';
-import { useScreenshot } from"../components/useScreenShot"
-import {useVueFlow } from '@vue-flow/core';
+import { useScreenshot } from "../components/useScreenShot"
+import { useVueFlow } from '@vue-flow/core';
+import useDragAndDrop from '../components/useDargAndDrop'
+
+const { onDragStart } = useDragAndDrop()
 
 const { vueFlowRef } = useVueFlow();
 const flowStore = useFlowStore()
@@ -56,10 +62,13 @@ const handleJumpToHome = () => {
   router.push('/')
 }
 const panel = ref(null)
+onMounted(() => {
+  setPanel(showPanel.value)
+})
 
 const title = ref('Flow Viewer Flow Viewer Flow Viewer')
 
-const showPanel = ref(false)
+const showPanel = ref(true)
 const handleClosePanel = () => {
   showPanel.value = false
 }
@@ -74,8 +83,8 @@ const handleScreenShot = () => {
 
   capture(vueFlowRef.value, { shouldDownload: true });
 }
-watch(() => showPanel.value, (newVal) => {
-  if (newVal) {
+function setPanel(open) {
+  if (open) {
     if (document.body.clientWidth > 768) {
       panel.value.style.width = '16%'
     }
@@ -85,8 +94,10 @@ watch(() => showPanel.value, (newVal) => {
   }
   else {
     panel.value.style.width = '0px'
-
   }
+}
+watch(() => showPanel.value, (newVal) => {
+  setPanel(newVal)
 })
 </script>
 <style lang="less" scoped>
@@ -132,6 +143,21 @@ watch(() => showPanel.value, (newVal) => {
           font-size: 20px;
         }
 
+      }
+      .left-panel-body {
+        height: calc(100% - 64px);
+        overflow: auto;
+        padding: 8px;
+        .drag-item {
+          width: 100%;
+          height: 48px;
+          background-color: #e9e9e9;
+          margin-bottom: 8px;
+          border-radius: 4px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
       }
     }
 
@@ -201,7 +227,9 @@ watch(() => showPanel.value, (newVal) => {
           width: 32px;
           border-radius: 4px;
           margin-left: 4px;
+          
         }
+
         .shot-btn {
           width: 32px;
           height: 32px;
@@ -209,6 +237,7 @@ watch(() => showPanel.value, (newVal) => {
           justify-content: center;
           align-items: center;
         }
+
         .shot-btn:hover {
           background: #f0f0f0;
         }
