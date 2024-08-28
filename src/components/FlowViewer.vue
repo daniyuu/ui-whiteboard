@@ -5,7 +5,7 @@
             <template #node-form="props">
                 <FormNode :data="props.data" />
             </template>
-            <template #node-human-text="props">
+            <template #node-text="props">
                 <HumanTextNode :data="props.data" />
             </template>
             <template #node-bilibili-video="props">
@@ -23,7 +23,7 @@
 
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { ControlButton, Controls } from '@vue-flow/controls'
@@ -44,69 +44,70 @@ const triggerDark = () => {
     dark.value = !dark.value
 }
 
+const nodeData = computed(() => store.nodes)
+const edges = computed(() => store.edges)
+// const nodeData = ref([
+//     {
+//         id: '1',
+//         type: 'input',
+//         data: { label: 'Node 1' },
+//         position: { x: 250, y: 0 },
+//         class: 'light',
+//     },
+//     {
+//         id: '3',
+//         type: 'human-text',
+//         data: {
+//             theamColor: 'red',
+//             text: '你可以通过以下几种方法来查看LLVM的版本：\
+// 1. **使用`llvm-config`命令**：\
+//    \n\`\`\`bash\n\
+//    llvm-config --version\
+//    \`\`\`\
+// \n 2.  **使用\`clang\`命令**（如果你安装了Clang）：\
+//    \n```bash\n\
+//    clang --version\
+//    \`\`\`\
+// 3. **使用`llvm-as`命令**：\
+//    \n\`\`\`bash\
+//    llvm-as --version\
+//    \`\`\`\
+// ',
+//             backgroundColor: '#fff', textColor: 'Node 3', title: "100"
+//         },
+//         position: { x: 10, y: 0 },
+//         class: 'light',
+//     },
+//     {
+//         id: '2',
+//         type: 'form',
+//         data: { value: 'Node 2' },
+//         position: { x: 120, y: 103 },
+//         class: 'light',
+//     },
 
-const nodeData = ref([
-    {
-        id: '1',
-        type: 'input',
-        data: { label: 'Node 1' },
-        position: { x: 250, y: 0 },
-        class: 'light',
-    },
-    {
-        id: '3',
-        type: 'human-text',
-        data: {
-            theamColor: 'red',
-            text: '你可以通过以下几种方法来查看LLVM的版本：\
-1. **使用`llvm-config`命令**：\
-   \n\`\`\`bash\n\
-   llvm-config --version\
-   \`\`\`\
-\n 2.  **使用\`clang\`命令**（如果你安装了Clang）：\
-   \n```bash\n\
-   clang --version\
-   \`\`\`\
-3. **使用`llvm-as`命令**：\
-   \n\`\`\`bash\
-   llvm-as --version\
-   \`\`\`\
-',
-            backgroundColor: '#fff', textColor: 'Node 3', title: "100"
-        },
-        position: { x: 10, y: 0 },
-        class: 'light',
-    },
-    {
-        id: '2',
-        type: 'form',
-        data: { value: 'Node 2' },
-        position: { x: 120, y: 103 },
-        class: 'light',
-    },
+//     {
+//         id: '5',
+//         type: 'bilibili-video',
+//         data: { value: '' },
+//         position: { x: 130, y: 403 },
+//     },
+// ])
 
-    {
-        id: '5',
-        type: 'bilibili-video',
-        data: { value: '' },
-        position: { x: 130, y: 403 },
-    },
-])
-
-const edges = ref([
-    {
-        id: 'e1-2',
-        source: '1',
-        target: '2',
-        animated: true,
-        sourceHandle: 'a',
-        target: '2',
-        data: {
-        },
-        style: {
-        },
-    },
-])
+// const edges = ref([
+//     {
+//         id: 'e1-2',
+//         source: '1',
+//         target: '2',
+//         animated: true,
+//         sourceHandle: 'a',
+//         target: '2',
+//         data: {
+//         },
+//         style: {
+//         },
+//     },
+// ])
 onInit((vueFlowInstance) => {
     // instance is the same as the return of `useVueFlow`
     vueFlowInstance.fitView()

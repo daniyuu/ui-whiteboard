@@ -8,7 +8,7 @@
                 <h2 class="section-title"> Your designs</h2>
             </div>
             <div class="card-container">
-                <div class="new-whiteboard-card card">
+                <div class="new-whiteboard-card card" @click="create()">
                     <i class="bi bi-plus-circle new-icon"></i>
                     <div class="new-title">New Whiteboard</div>
                 </div>
@@ -22,13 +22,15 @@
                         <div class="card-info-right-side">
                             <div class="card-action">
                                 <a-dropdown>
-                                        <i @click="(e)=>e.stopPropagation()" class="bi bi-three-dots"></i>
+                                    <i @click="(e) => e.stopPropagation()" class="bi bi-three-dots"></i>
                                     <template #overlay>
-                                    <a-menu slot="overlay">
-                                        <a-menu-item key="1" @click="handleShowRename(item)"><i class="bi bi-pencil" style="margin-right: 8px;"></i>  Rename</a-menu-item>
-                                        <a-menu-divider />
-                                        <a-menu-item key="2" @click="handleClick(item)"> <i class="bi bi-trash3" style="margin-right: 8px;"></i> Delete</a-menu-item>
-                                    </a-menu>
+                                        <a-menu slot="overlay">
+                                            <a-menu-item key="1" @click="handleShowRename(item)"><i class="bi bi-pencil"
+                                                    style="margin-right: 8px;"></i> Rename</a-menu-item>
+                                            <a-menu-divider />
+                                            <a-menu-item key="2" @click="handleClick(item)"> <i class="bi bi-trash3"
+                                                    style="margin-right: 8px;"></i> Delete</a-menu-item>
+                                        </a-menu>
                                     </template>
                                 </a-dropdown>
                             </div>
@@ -54,20 +56,31 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
-const whiteboardData = ref([
-    {
-        title: "title1",
-        createdAt: "2021-10-10",
-        updatedAt: "2021-10-10",
-    }
-])
+import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
+
+const whiteboardData = ref()
+let creating = false
+
+async function create() {
+    if (creating) return
+    const data = await createWhiteBoard({
+        name: 'New Whiteboard',
+    })
+    const id = data.id
+    router.push('/flow/' + id)
+}
 
 const router = useRouter()
 
-const handleJumpToFlow = (item) => {
-    console.log('jump to flow')
-    router.push('/flow')
+async function fetchWhiteboardData() {
+    const res = await getWhiteBoardList()
+    whiteboardData.value = res
+}
+fetchWhiteboardData()
 
+const handleJumpToFlow = (item) => {
+    console.log(item)
+    router.push('/flow/' + item.id)
 }
 
 const handleClick = (item) => {

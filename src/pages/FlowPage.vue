@@ -8,16 +8,22 @@
           <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
         </div>
         <div class="left-panel-body">
-          <div class="drag-item" draggable="true"   @dragstart="onDragStart($event, 'bilibili-video')">card</div>
-
+          <div class="node-area">
+          <div class="drag-item" draggable="true" @dragstart="onDragStart($event, 'bilibili-video')">card</div>
+          </div>
+          <a-button type="default" class="regenerate-btn" @click="handleRegenerate">Regenerate</a-button>
+          
         </div>
       </div>
       <div class="right-side">
         <div class="fixed-bar side-bar">
-          <div class="action-item card-button" @click="handelShowPanel">
+          <div class="operation-action-item card-button" @click="handelShowPanel">
             <img src="/img/card.svg" width="24">
           </div>
-          <div class="action-item"></div>
+          <div class="operation-action-item save-btb"  @click="handleSave">
+            <i class="bi bi-save"></i>
+          </div>
+          <div class="operation-action-item"></div>
         </div>
         <div class="fixed-bar title-bar">
           <div @click="handleJumpToHome" class=" action-item return-home">
@@ -43,18 +49,23 @@
   </div>
 </template>
 <script setup>
-import { ref, watch ,onMounted} from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import flowViewer from '../components/FlowViewer.vue'
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useFlowStore } from '../store/flowStore';
 import { useScreenshot } from "../components/useScreenShot"
 import { useVueFlow } from '@vue-flow/core';
 import useDragAndDrop from '../components/useDargAndDrop'
+import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard } from '../api';
 
+const route = useRoute()
 const { onDragStart } = useDragAndDrop()
 
 const { vueFlowRef } = useVueFlow();
 const flowStore = useFlowStore()
+flowStore.setId(route.params.id)
+flowStore.getFlow()
+
 const { capture } = useScreenshot()
 
 const router = useRouter()
@@ -65,6 +76,12 @@ const panel = ref(null)
 onMounted(() => {
   setPanel(showPanel.value)
 })
+
+const handleSave = async () => {
+  const data = await capture(vueFlowRef.value, { shouldDownload: false });
+  flowStore.saveFlow(data)
+}
+
 
 const title = ref('Flow Viewer Flow Viewer Flow Viewer')
 
@@ -83,6 +100,13 @@ const handleScreenShot = () => {
 
   capture(vueFlowRef.value, { shouldDownload: true });
 }
+const loadingGenerate= ref(false)
+const handleRegenerate = async () => {
+  loadingGenerate.value = true
+  await flowStore.regenerate()
+  loadingGenerate.value = false
+}
+
 function setPanel(open) {
   if (open) {
     if (document.body.clientWidth > 768) {
@@ -144,14 +168,31 @@ watch(() => showPanel.value, (newVal) => {
         }
 
       }
+
       .left-panel-body {
         height: calc(100% - 64px);
         overflow: auto;
         padding: 8px;
-        .drag-item {
-          width: 100%;
+        position: relative;
+        .node-area {
+          .drag-item {
+            width: 100%;
+            height: 48px;
+            background-color: #e9e9e9;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+        .regenerate-btn {
+          width: calc(100% - 16px);
           height: 48px;
-          background-color: #e9e9e9;
+          position: absolute;
+          bottom: 0;
+          background-color: #013979;
+          color: #fff;
           margin-bottom: 8px;
           border-radius: 4px;
           display: flex;
@@ -184,24 +225,27 @@ watch(() => showPanel.value, (newVal) => {
         display: flex;
         flex-direction: column;
 
-        .action-item {
-          width: 40px;
+        .operation-action-item {
+          width: 32px;
+          height: 32px;
           display: flex;
           cursor: pointer;
           justify-content: center;
           align-items: center;
-          border-bottom: 1px solid #f0f0f0;
-
+          margin: 6px 0px;
           &:last-child {
             border-bottom: none;
           }
         }
+        .operation-action-item:hover {
+          background: #f0f0f0;
+        }
 
         .card-button {
-          height: 48px;
           display: flex;
           justify-content: center;
           align-items: center;
+          margin-top: 6px;
         }
       }
 
@@ -227,7 +271,7 @@ watch(() => showPanel.value, (newVal) => {
           width: 32px;
           border-radius: 4px;
           margin-left: 4px;
-          
+
         }
 
         .shot-btn {

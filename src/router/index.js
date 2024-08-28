@@ -5,10 +5,10 @@ import FlowPage from '../pages/FlowPage.vue'
 
 const routes = [
   { path: '/', component: HomePage },
-  { path: '/flow', component: FlowPage },
+  { path: '/flow/:id', component: FlowPage, name: 'flow' },
 ]
 
 export default createRouter({
-  history: createWebHistory() ,
+  history: createWebHistory(),
   routes,
 })
