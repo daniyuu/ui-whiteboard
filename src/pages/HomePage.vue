@@ -13,11 +13,13 @@
                     <div class="new-title">New Whiteboard</div>
                 </div>
                 <div class="card" v-for="item in whiteboardData" :key="item.title" @click="handleJumpToFlow(item)">
-                    <div class="card-prevew"></div>
+                    <div class="card-prevew">
+                        <img :src=" item.avatar"/>
+                    </div>
                     <div class="card-info-bar">
                         <div class="card-info-left-side">
                             <div class="card-title">{{ item.title }}</div>
-                            <div class="card-date">Edited: {{ item.updatedAt }}</div>
+                            <div class="card-date">Edited: {{ item.updated_at }}</div>
                         </div>
                         <div class="card-info-right-side">
                             <div class="card-action">
@@ -28,7 +30,7 @@
                                             <a-menu-item key="1" @click="handleShowRename(item)"><i class="bi bi-pencil"
                                                     style="margin-right: 8px;"></i> Rename</a-menu-item>
                                             <a-menu-divider />
-                                            <a-menu-item key="2" @click="handleClick(item)"> <i class="bi bi-trash3"
+                                            <a-menu-item key="2" @click="handleDelete(item)"> <i class="bi bi-trash3"
                                                     style="margin-right: 8px;"></i> Delete</a-menu-item>
                                         </a-menu>
                                     </template>
@@ -83,8 +85,10 @@ const handleJumpToFlow = (item) => {
     router.push('/flow/' + item.id)
 }
 
-const handleClick = (item) => {
+const handleDelete = async (item) => {
     console.log(item)
+    await deleteWhiteBoard(item.id)
+    await fetchWhiteboardData()
 }
 const currentEditName = ref('')
 const showRenameModal = ref(false)
@@ -146,6 +150,7 @@ const handleRename = () => {
             .card {
                 position: relative;
                 width: 300px;
+                height: 200px;
                 background-color: #fffcfc;
                 ;
                 margin-bottom: 12px;

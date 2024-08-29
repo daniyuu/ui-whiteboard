@@ -9,10 +9,11 @@
         </div>
         <div class="left-panel-body">
           <div class="node-area">
-          <div class="drag-item" draggable="true" @dragstart="onDragStart($event, 'bilibili-video')">card</div>
+            <div class="drag-item" draggable="true" @dragstart="onDragStart($event, 'bilibili-video')">card</div>
+            <div class="drag-item" draggable="true" @dragstart="onDragStart($event, 'text', { content: 'hello word' })">text
+            </div>
           </div>
           <a-button type="default" class="regenerate-btn" @click="handleRegenerate">Regenerate</a-button>
-          
         </div>
       </div>
       <div class="right-side">
@@ -20,7 +21,7 @@
           <div class="operation-action-item card-button" @click="handelShowPanel">
             <img src="/img/card.svg" width="24">
           </div>
-          <div class="operation-action-item save-btb"  @click="handleSave">
+          <div class="operation-action-item save-btb" @click="handleSave">
             <i class="bi bi-save"></i>
           </div>
           <div class="operation-action-item"></div>
@@ -56,7 +57,6 @@ import { useFlowStore } from '../store/flowStore';
 import { useScreenshot } from "../components/useScreenShot"
 import { useVueFlow } from '@vue-flow/core';
 import useDragAndDrop from '../components/useDargAndDrop'
-import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard } from '../api';
 
 const route = useRoute()
 const { onDragStart } = useDragAndDrop()
@@ -100,7 +100,7 @@ const handleScreenShot = () => {
 
   capture(vueFlowRef.value, { shouldDownload: true });
 }
-const loadingGenerate= ref(false)
+const loadingGenerate = ref(false)
 const handleRegenerate = async () => {
   loadingGenerate.value = true
   await flowStore.regenerate()
@@ -174,6 +174,7 @@ watch(() => showPanel.value, (newVal) => {
         overflow: auto;
         padding: 8px;
         position: relative;
+
         .node-area {
           .drag-item {
             width: 100%;
@@ -186,6 +187,7 @@ watch(() => showPanel.value, (newVal) => {
             align-items: center;
           }
         }
+
         .regenerate-btn {
           width: calc(100% - 16px);
           height: 48px;
@@ -233,10 +235,12 @@ watch(() => showPanel.value, (newVal) => {
           justify-content: center;
           align-items: center;
           margin: 6px 0px;
+
           &:last-child {
             border-bottom: none;
           }
         }
+
         .operation-action-item:hover {
           background: #f0f0f0;
         }

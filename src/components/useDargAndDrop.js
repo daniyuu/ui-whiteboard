@@ -1,5 +1,7 @@
 import { useVueFlow } from '@vue-flow/core'
 import { ref, watch } from 'vue'
+import { useFlowStore } from '../store/flowStore';
+
 
 let id = 0
 
@@ -16,8 +18,10 @@ const state = {
   isDragOver: ref(false),
   isDragging: ref(false),
 }
+let tempData = null
 
 export default function useDragAndDrop() {
+  const store = useFlowStore()
   const { draggedType, isDragOver, isDragging } = state
 
   const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow()
@@ -26,9 +30,10 @@ export default function useDragAndDrop() {
     document.body.style.userSelect = dragging ? 'none' : ''
   })
 
-  function onDragStart(event, type) {
+  function onDragStart(event, type, data) {
     if (event.dataTransfer) {
       event.dataTransfer.setData('application/vueflow', type)
+      tempData = data
       event.dataTransfer.effectAllowed = 'move'
     }
 
@@ -54,6 +59,7 @@ export default function useDragAndDrop() {
     isDragOver.value = false
   }
 
+
   function onDragEnd() {
     isDragging.value = false
     isDragOver.value = false
@@ -67,6 +73,8 @@ export default function useDragAndDrop() {
    * @param {DragEvent} event
    */
   function onDrop(event) {
+    const data = tempData
+    tempData = null
     const position = screenToFlowCoordinate({
       x: event.clientX,
       y: event.clientY,
@@ -78,7 +86,7 @@ export default function useDragAndDrop() {
       id: nodeId,
       type: draggedType.value,
       position,
-      data: { label: nodeId },
+      data: { label: nodeId, ...data },
     }
 
     const { off } = onNodesInitialized(() => {

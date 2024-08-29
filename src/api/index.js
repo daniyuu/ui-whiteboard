@@ -1,52 +1,31 @@
 
+import request from '../utils/http/axios'
+
 export async function createWhiteBoard(params) {
-    return {
-        "name": "whiteboard",
-        "id": "1"
-    }
+    const res = await request.post('/whiteboard/create', params)
+    return res
 }
 
 export async function updateWhiteBoard(id, data) {
+    const res = await request.post(`/whiteboard/${id}/update`, data)
+    return res
 }
 
 export async function deleteWhiteBoard(id) {
+    
+    const res = await request.post(`/whiteboard/${id}/delete`)
+    return res
 
 }
 
 export async function getWhiteBoardList(params) {
-    return [
-        {
-            name: "title1",
-            createdAt: "2021-10-10",
-            updatedAt: "2021-10-10",
-            id:"1"
-        }
-    ]
+   const res = await request.get('/whiteboard/all', { params })
+    return res.whiteboards
 }
 
 export async function getWhiteBoardById(id) {
-    return {
-        "name": "whiteboard",
-        "avatar": "avatar",
-        "data": {
-            "graph": {
-                "nodes": [
-                    {
-                        "id": "uuid_1",
-                        "type": "text",
-                        "content": "Updated Content",
-                        "status": "inactive",
-                        "created_by": "user",
-                        "extra_metadata": {},
-                        "ui_attributes": {
-                            "position": { "x": 100, "y": 100 },
-                        },
-                    }
-                ],
-                "edges": [{ "extra_metadata": {}, "ui_attributes": {} }],
-            }
-        },
-    }
+    const res = await request.get(`/whiteboard/${id}`)
+    return res
 }
 
 export async function getNewFormNodes(userId) {
