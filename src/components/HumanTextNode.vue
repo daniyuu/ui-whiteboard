@@ -3,7 +3,7 @@
         <div class="background-layer"></div>
         <div class="card-title">{{ data.title }}</div>
         <div class="card-body">
-            <MakedownViewer :text="data.text"></MakedownViewer>    
+            <MakedownViewer :text="data.content"></MakedownViewer>    
         </div>
     </div>
 </template>
