@@ -8,6 +8,9 @@
             <template #node-text="props">
                 <HumanTextNode :data="props.data" />
             </template>
+            <template #node-sticky="props">
+                <StickyNode :data="props.data" />
+            </template>
             <template #node-bilibili-video="props">
                 <BiliBiliVideoNode :data="props.data" />
             </template>
@@ -33,18 +36,21 @@ import HumanTextNode from './HumanTextNode.vue'
 import BiliBiliVideoNode from './BiliBiliVideoNode.vue'
 import { useFlowStore } from '../store/flowStore'
 import useDragAndDrop from './useDargAndDrop'
+import StickyNode from './StickyNode.vue'
 
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 
 const store = useFlowStore()
-const { onInit, onNodeDragStop, onConnect, setViewport, toObject, 
+const { onInit, onNodeDragStop, onConnect, setViewport,
     onNodesChange, applyNodeChanges, applyEdgeChange } = useVueFlow()
 const dark = ref(true)
 const triggerDark = () => {
     dark.value = !dark.value
 }
 
+
 const nodeData = computed(() => store.nodes)
+
 const edges = computed(() => store.edges)
 // const nodeData = ref([
 //     {
@@ -138,9 +144,6 @@ function updatePos() {
     })
 }
 
-function logToObject() {
-    console.log(toObject())
-}
 
 /**
  * Resets the current viewport transformation (zoom & pan)

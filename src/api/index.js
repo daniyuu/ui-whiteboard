@@ -28,15 +28,23 @@ export async function getWhiteBoardById(id) {
     return res
 }
 
-export async function getNewFormNodes(userId) {
+export async function getNewFormNodes(id) {
+    const res = await request.post(`/whiteboard/${id}/questions`)
+    return res
+}
+
+export async function getNewSearchNodes(id) {
+  
     return []
 }
 
-export async function getNewSearchNodes(userId) {
-    return []
+export async function getAnswer(id) {
+    const res = await request.post(`/whiteboard/${id}/answers`)
+    return res
 }
 
-export async function getNewAINodes(userId) {
-    return []
+export async function getNewAINodes(id) {
+    const res = await request.post(`/whiteboard/${id}/insights`)
+    return res
 }
 

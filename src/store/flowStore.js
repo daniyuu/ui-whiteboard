@@ -1,5 +1,7 @@
-import _ from "lodash";
+import _, { add } from "lodash";
 import { defineStore } from "pinia";
+import { Position, useVueFlow } from '@vue-flow/core'
+
 import { getWhiteBoardById, updateWhiteBoard, getNewFormNodes, getNewSearchNodes, getNewAINodes } from "../api";
 
 const parserData = (data) => {
@@ -7,12 +9,8 @@ const parserData = (data) => {
         return {
             id: node.id,
             type: node.type,
-            data:{
-                content: node.content
-            },
-            status: node.status,
-            created_by: node.created_by,
-            extra_metadata: node.extra_metadata,
+            updated_at: node.updated_at,
+            created_at: node.created_at,
             ...node.ui_attributes
 
         }
@@ -29,7 +27,8 @@ export const useFlowStore = defineStore("flow", {
     state: () => {
         return {
             id: "",
-            nodes: [],
+            nodes: [
+            ],
             edges: [],
             recommendNodes: [],
             originalData: {},
@@ -59,7 +58,9 @@ export const useFlowStore = defineStore("flow", {
             }
             const data = {
                 name: this.name,
-                avatar: this.avatar,
+                ui_attributes: {
+                    avatar: this.avatar,
+                },
                 data: {
                     graph: {
                         nodes: this.nodes.map((node) => {
@@ -67,10 +68,15 @@ export const useFlowStore = defineStore("flow", {
                                 id: node.id,
                                 type: node.type,
                                 content: node.data.content,
-                                status: node.status,
-                                created_by: node.created_by,
+                                status: node.data.status,
+                                created_by: node.data.created_by,
+                                updated_at: node.updated_at||'',
+                                created_at: node.created_at||'',
                                 extra_metadata: node.extra_metadata,
-                                ui_attributes: _.omit(node, ["id", "type", "data", "status", "created_by", "extra_metadata"])
+                                ui_attributes: _.pick(node, ["data",
+                                    'position',
+                                    'class'
+                                ],)
                             }
                         }),
                         edges: []
@@ -86,10 +92,20 @@ export const useFlowStore = defineStore("flow", {
                 this[key] = config[key]
             }
         },
+        addNode(node) {
+            console.log(this.nodes);
+            this.nodes.push(node)
+        },
+
+        addEdge(edge) {
+            this.edges.push(edge)
+        },
+
         async fetchNewNodes() {
             await this.saveFlow()
             const promises = [getNewFormNodes(this.id), getNewSearchNodes(this.id), getNewAINodes(this.id)]
             const [formNodes, searchNodes, aiNodes] = await Promise.all(promises)
+            console.log(formNodes, searchNodes, aiNodes)
             this.recommendNodes = [
                 ...formNodes,
                 ...searchNodes,

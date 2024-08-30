@@ -1,15 +1,15 @@
 import { useVueFlow } from '@vue-flow/core'
 import { ref, watch } from 'vue'
 import { useFlowStore } from '../store/flowStore';
+import { nanoid } from 'nanoid';
 
 
-let id = 0
 
 /**
  * @returns {string} - A unique id.
  */
 function getId() {
-  return `dndnode_${id++}`
+  return nanoid(12)
 }
 
 
@@ -24,7 +24,7 @@ export default function useDragAndDrop() {
   const store = useFlowStore()
   const { draggedType, isDragOver, isDragging } = state
 
-  const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow()
+  const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode, toObject } = useVueFlow()
 
   watch(isDragging, (dragging) => {
     document.body.style.userSelect = dragging ? 'none' : ''
@@ -81,6 +81,9 @@ export default function useDragAndDrop() {
     })
 
     const nodeId = getId()
+    if(!data){
+      return
+    }
 
     const newNode = {
       id: nodeId,
@@ -98,8 +101,20 @@ export default function useDragAndDrop() {
     })
 
     addNodes(newNode)
-  }
 
+  }
+ 
+  function autoSave() {
+    if(window.timer){
+      clearTimeout(window.timer)  
+    }
+    window.timer = setTimeout(() => {
+      store.setProperty({ nodes: toObject().nodes })
+      store.saveFlow()
+      autoSave()
+    }, 10000);
+  }
+  autoSave()
   return {
     draggedType,
     isDragOver,

@@ -14,7 +14,7 @@
                 </div>
                 <div class="card" v-for="item in whiteboardData" :key="item.title" @click="handleJumpToFlow(item)">
                     <div class="card-prevew">
-                        <img :src=" item.avatar"/>
+                        <img style="width: 100%;" :src=" _.get(item.ui_attributes,'avatar')"/>
                     </div>
                     <div class="card-info-bar">
                         <div class="card-info-left-side">
@@ -58,6 +58,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
+import _ from 'lodash'
 import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
 
 const whiteboardData = ref()
