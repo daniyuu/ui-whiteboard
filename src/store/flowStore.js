@@ -1,14 +1,12 @@
-import _, { add } from "lodash";
+import _, { remove } from "lodash";
 import { defineStore } from "pinia";
-import { Position, useVueFlow } from '@vue-flow/core'
-
 import { getWhiteBoardById, updateWhiteBoard, getNewFormNodes, getNewSearchNodes, getNewAINodes } from "../api";
+import { nanoid } from "nanoid";
 
 const parserData = (data) => {
     const nodes = _.get(data, "data.graph.nodes", []).map((node) => {
         return {
             id: node.id,
-            type: node.type,
             updated_at: node.updated_at,
             created_at: node.created_at,
             ...node.ui_attributes
@@ -30,7 +28,8 @@ export const useFlowStore = defineStore("flow", {
             nodes: [
             ],
             edges: [],
-            recommendNodes: [],
+            recommendNodes: [
+            ],
             originalData: {},
             name: "",
             avatar: ""
@@ -64,20 +63,29 @@ export const useFlowStore = defineStore("flow", {
                 data: {
                     graph: {
                         nodes: this.nodes.map((node) => {
-                            return {
+                            const data = {
                                 id: node.id,
-                                type: node.type,
-                                content: node.data.content,
+                                type: node.data.dataType || "text",
+                                content: node.data.content || "",
                                 status: node.data.status,
-                                created_by: node.data.created_by,
-                                updated_at: node.updated_at||'',
-                                created_at: node.created_at||'',
+                                created_by: node.data.created_by || 'ai',
+                                updated_at: node.updated_at || '',
+                                created_at: node.created_at || '',
                                 extra_metadata: node.extra_metadata,
                                 ui_attributes: _.pick(node, ["data",
                                     'position',
-                                    'class'
+                                    'class',
+                                    'type',
                                 ],)
                             }
+                            if (node.type == "flow-form" || node.type == "flow-select") {
+                                data.content = {
+                                    question: node.data.question,
+                                    options: node.data.options,
+                                    answer: node.data.answer,
+                                }
+                            }
+                            return data
                         }),
                         edges: []
                     }
@@ -87,14 +95,32 @@ export const useFlowStore = defineStore("flow", {
             const res = await updateWhiteBoard(this.id, data)
         },
 
+        removeRecommendNode(id) {
+            console.log("remove recommend node", id)
+            this.recommendNodes = this.recommendNodes.filter((node) => {
+                const find = node.data.id !== id
+                console.log(find, node.data.id, id)
+                return find
+            })
+            return true
+
+        },
+
         setProperty(config) {
             for (const key in config) {
                 this[key] = config[key]
             }
         },
-        addNode(node) {
-            console.log(this.nodes);
+        async addNode(node) {
             this.nodes.push(node)
+            await this.saveFlow()
+        },
+
+        async removeNode(id) {
+            console.log("remove node", id)
+            this.nodes = this.nodes.filter((node) => node.id !== id)
+            await this.saveFlow()
+
         },
 
         addEdge(edge) {
@@ -107,10 +133,42 @@ export const useFlowStore = defineStore("flow", {
             const [formNodes, searchNodes, aiNodes] = await Promise.all(promises)
             console.log(formNodes, searchNodes, aiNodes)
             this.recommendNodes = [
-                ...formNodes,
-                ...searchNodes,
-                ...aiNodes
+                ...formNodes.map((node) => {
+                    return {
+                        type: node.type == "text" ? "flow-form" : "flow-select",
+                        data: {
+                            id: nanoid(),
+                            dataType: node.type,
+                            question: node.question,
+                            options: node.options,
+                            created_by: "ai",
+                            answer: "",
+                        },
+                    }
+                }),
+                ...searchNodes.map((node) => {
+                    return {
+                        type: "bilibili-video",
+                        data: {
+                            id: nanoid(),
+                            ...node,
+                            created_by: "ai"
+                        },
+                    }
+                }),
+                ...aiNodes.map((node) => {
+                    return {
+                        type: "flow-text",
+                        data: {
+                            id: nanoid(),
+                            dataType: "text",
+                            created_by: "ai",
+                            content: node,
+                        }
+                    }
+                })
             ]
+            console.log(this.recommendNodes)
         }
     }
 })

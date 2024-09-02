@@ -1,13 +1,14 @@
 <template>
-    <div class="sticky-node" :style="style">
+    <div class="sticky-node" @click="handleClick":style="style">
         <div class="card-body">
-            <a-textarea class="input" auto-size v-model:value="data.content" :rows="3" placeholder="" ></a-textarea>
+            <a-textarea ref="textarea" class="input" auto-size v-model:value="data.content" :rows="3" placeholder="" ></a-textarea>
         </div>
     </div>
 </template>
 <script setup>
 import _ from 'lodash'
-import { ref, computed } from 'vue'
+import { ref, computed, handleError } from 'vue'
+const textarea = ref(null)
 const props = defineProps({
     data: {
         type: Object,
@@ -23,6 +24,9 @@ const style = computed(() => {
         height: '300px',
     }
 })
+const handleClick = () => {
+    textarea.value.focus()
+}
 
 const backgroundColor = computed(() => {
     return props.data.backgroundColor || "#FFFFFF"

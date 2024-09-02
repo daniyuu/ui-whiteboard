@@ -4,7 +4,6 @@ import { useFlowStore } from '../store/flowStore';
 import { nanoid } from 'nanoid';
 
 
-
 /**
  * @returns {string} - A unique id.
  */
@@ -73,40 +72,42 @@ export default function useDragAndDrop() {
    * @param {DragEvent} event
    */
   function onDrop(event) {
-    const data = tempData
+    let { id, ...data } = tempData
     tempData = null
     const position = screenToFlowCoordinate({
       x: event.clientX,
       y: event.clientY,
     })
+    if (!id) {
+      id = getId()
+    }
 
-    const nodeId = getId()
-    if(!data){
+    if (!draggedType.value) {
       return
     }
 
     const newNode = {
-      id: nodeId,
+      id,
       type: draggedType.value,
       position,
-      data: { label: nodeId, ...data },
+      data: { id, ...data },
     }
 
     const { off } = onNodesInitialized(() => {
-      updateNode(nodeId, (node) => ({
+      updateNode(id, (node) => ({
         position: { x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2 },
       }))
 
       off()
     })
-
+    store.removeRecommendNode(id)
     addNodes(newNode)
 
   }
- 
+
   function autoSave() {
-    if(window.timer){
-      clearTimeout(window.timer)  
+    if (window.timer) {
+      clearTimeout(window.timer)
     }
     window.timer = setTimeout(() => {
       store.setProperty({ nodes: toObject().nodes })

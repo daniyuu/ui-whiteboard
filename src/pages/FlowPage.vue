@@ -8,13 +8,13 @@
           <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
         </div>
         <div class="left-panel-body">
-          <div class="node-area">
-            <div class="drag-item" draggable="true" @dragstart="onDragStart($event, 'bilibili-video')">card</div>
-            <div class="drag-item" draggable="true" @dragstart="onDragStart($event, 'text', { content: 'hello word' })">
-              text
-            </div>
+          <a-spin :spinning="loadingGenerate" style="width: 100%;"/>
+          <div class="node-area" draggable="false">
+            <div draggable="false"></div>
+            <component style="box-shadow: none;" class="card-item" draggable="true" @dragstart="onDragStart($event, item.type, item.data)"
+              v-for="item, index in recommendNodes" :key="index" :data="item.data" :is="item.type"></component>
           </div>
-          <a-button type="default" class="regenerate-btn" @click="handleRegenerate">Regenerate</a-button>
+          <a-button :loading="loadingGenerate" type="default" class="regenerate-btn" @click="handleRegenerate">Regenerate</a-button>
         </div>
       </div>
       <div class="right-side">
@@ -78,7 +78,20 @@ import { useFlowStore } from '../store/flowStore';
 import { useScreenshot } from "../components/useScreenShot"
 import { useVueFlow } from '@vue-flow/core';
 import useDragAndDrop from '../components/useDargAndDrop'
+import FlowSelect from '../components/FlowSelectNode.vue';
+import FlowForm from '../components/FlowFormNode.vue';
+import FlowText from '../components/AiTextNode.vue';
+import BilibiliVideo from '../components/BiliBiliVideoNode.vue';
+import { message } from 'ant-design-vue';
 
+defineOptions({
+  components: {
+    FlowSelect,
+    FlowForm,
+    FlowText,
+    BilibiliVideo
+  }
+})
 const stickyPanelClose = ref(true)
 const stickySqrt = ref([
   {
@@ -136,10 +149,14 @@ onMounted(() => {
 
 const handleSave = async () => {
   const data = await capture(vueFlowRef.value, { shouldDownload: false });
-  flowStore.saveFlow(data)
+  await flowStore.saveFlow(data)
+  message.success('Save Success')
 }
 
-
+const recommendNodes = computed(() => {
+  return flowStore.recommendNodes
+}
+)
 const title = computed(() => flowStore.name)
 
 const showPanel = ref(true)
@@ -167,12 +184,7 @@ const handleRegenerate = async () => {
 
 function setPanel(open) {
   if (open) {
-    if (document.body.clientWidth > 768) {
-      panel.value.style.width = '16%'
-    }
-    else {
-      panel.value.style.width = '200px'
-    }
+      panel.value.style.width = '356px'
   }
   else {
     panel.value.style.width = '0px'
@@ -237,19 +249,16 @@ watch(() => showPanel.value, (newVal) => {
       .left-panel-body {
         height: calc(100% - 64px);
         overflow: auto;
-        padding: 8px;
+        padding: 8px 0px;
         position: relative;
 
         .node-area {
-          .drag-item {
-            width: 100%;
-            height: 48px;
-            background-color: #e9e9e9;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+          height: calc(100vh - 140px);
+          overflow: auto;
+          padding: 4px 8px;
+          .card-item {
+            margin-bottom: 12px;
+
           }
         }
 

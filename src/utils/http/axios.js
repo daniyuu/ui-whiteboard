@@ -7,9 +7,9 @@ const ContentType = {
   formData: 'multipart/form-data'
 }
 
-// const baseURL = "http://localhost:8000/"
+const baseURL = "http://localhost:8000/"
 
-const baseURL = "https://mt-whiteboard.azurewebsites.net/"
+// const baseURL = "https://mt-whiteboard.azurewebsites.net/"
 
 const axiosInstance = axios.create({
   baseURL,
@@ -35,13 +35,13 @@ axiosInstance.interceptors.response.use(
     if (res.status === 200) {
       return res.data
     } else if (res.status === 401 || res.status === 403) {
-      message.error('登录过期或权限不足, 请重新登陆!')
+      message.error('401')
       return false
     } else if (res.status === 500) {
-      message.error('请求数据失败, 请重试!1')
+      message.error('500')
       return false
     } else if (res.status === 406) {
-      message.error('登陆超时请重新登录!')
+      message.error('406')
       return false
     } else {
       return false
@@ -50,14 +50,14 @@ axiosInstance.interceptors.response.use(
   },
   error => {
     console.log(error)
-    const msg = error.message
+    const msg = error.message || error
     const result = error.response
     if (result) {
       const { data } = result
       message.error(data.errorMessage)
     } else if (msg) {
       if (msg === 'Network Error') {
-        message.error('网络错误,请检查网络!')
+        message.error('Network Error')
       } else {
         message.error(msg)
       }

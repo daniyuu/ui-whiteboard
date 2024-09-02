@@ -61,6 +61,7 @@ import { useRouter } from 'vue-router';
 import _ from 'lodash'
 import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
 
+
 const whiteboardData = ref()
 let creating = false
 

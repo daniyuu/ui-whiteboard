@@ -2,11 +2,14 @@
     <div class="basic-flow" @drop="onDrop">
         <VueFlow :dark="dark" :nodes="nodeData" :edges="edges" @dragover="onDragOver" @dragleave="onDragLeave"
             :class="{ dark }" :default-viewport="{ zoom: 1 }" :min-zoom="0.2" :max-zoom="4">
-            <template #node-form="props">
+            <template #node-flow-form="props">
                 <FormNode :data="props.data" />
             </template>
-            <template #node-text="props">
-                <HumanTextNode :data="props.data" />
+            <template #node-flow-select="props">
+                <FlowSelectNode :data="props.data" />
+            </template>
+            <template #node-flow-text="props">
+                <AiTextNode :data="props.data" />
             </template>
             <template #node-sticky="props">
                 <StickyNode :data="props.data" />
@@ -31,12 +34,13 @@ import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { ControlButton, Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
-import FormNode from './FormNode.vue'
-import HumanTextNode from './HumanTextNode.vue'
+import FormNode from './FlowFormNode.vue'
+import AiTextNode from './AiTextNode.vue'
 import BiliBiliVideoNode from './BiliBiliVideoNode.vue'
 import { useFlowStore } from '../store/flowStore'
 import useDragAndDrop from './useDargAndDrop'
 import StickyNode from './StickyNode.vue'
+import FlowSelectNode from './FlowSelectNode.vue'
 
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 
@@ -124,6 +128,15 @@ onNodeDragStop(({ event, nodes, node }) => {
 
 onNodesChange(async (changes) => {
     applyNodeChanges(changes)
+    changes.forEach((change) => {
+        if(change.type === 'add') {
+            console.log('add', change)
+        }else if(change.type === 'remove') {
+            store.removeNode(change.id)
+        }
+
+
+    })
 })
 
 /**
