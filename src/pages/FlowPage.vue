@@ -8,191 +8,246 @@
           <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
         </div>
         <div class="left-panel-body">
-          <a-spin :spinning="loadingGenerate" style="width: 100%;"/>
+          <a-spin :spinning="loadingGenerate" style="width: 100%" />
           <div class="node-area" draggable="false">
             <div draggable="false"></div>
-            <component style="box-shadow: none;" class="card-item" draggable="true" @dragstart="onDragStart($event, item.type, item.data)"
-              v-for="item, index in recommendNodes" :key="index" :data="item.data" :is="item.type"></component>
+            <component
+              style="box-shadow: none"
+              class="card-item"
+              draggable="true"
+              @dragstart="onDragStart($event, item.type, item.data)"
+              v-for="(item, index) in recommendNodes"
+              :key="index"
+              :data="item.data"
+              :is="item.type"
+            ></component>
           </div>
-          <a-button :loading="loadingGenerate" type="default" class="regenerate-btn" @click="handleRegenerate">Regenerate</a-button>
+          <a-button
+            :loading="loadingGenerate"
+            type="default"
+            class="regenerate-btn"
+            @click="handleRegenerate"
+            >Regenerate</a-button
+          >
         </div>
       </div>
       <div class="right-side">
-        <div class="sticky-bar fixed-bar" :class="stickyPanelClose ? 'sticky-panel-close' : ''">
+        <div
+          class="sticky-bar fixed-bar"
+          :class="stickyPanelClose ? 'sticky-panel-close' : ''"
+        >
           <div class="sticky-tools--block">
             <div class="sticky-tools--head">Square (1:1)</div>
             <div class="sticky-tools--wrap">
-              <div class="sticky-sqrt" draggable="true" @dragstart="onDragStart($event, 'sticky', {
-                created_by: 'user',
-                backgroundColor: item.background,
-              })" v-for="item in stickySqrt" :style="`background: ${item.background}`"></div>
+              <div
+                class="sticky-sqrt"
+                draggable="true"
+                @dragstart="
+                  onDragStart($event, 'sticky', {
+                    created_by: 'user',
+                    backgroundColor: item.background,
+                  })
+                "
+                v-for="item in stickySqrt"
+                :style="`background: ${item.background}`"
+              ></div>
             </div>
           </div>
         </div>
         <div class="fixed-bar side-bar">
-          <div class="operation-action-item card-button" @click="handelShowPanel">
+          <div
+            class="operation-action-item card-button"
+            @click="handelShowPanel"
+          >
             <a-tooltip title="Show Toolbox">
-              <img src="/img/card.svg" width="30">
+              <img src="/img/card.svg" width="30" />
             </a-tooltip>
           </div>
-          <div class="operation-action-item stick-button" @click="handelShowStickPanel">
+          <div
+            class="operation-action-item stick-button"
+            @click="handelShowStickPanel"
+          >
             <a-tooltip title="Show Toolbox">
-              <img src="/img/sticky.svg" width="40px">
+              <img src="/img/sticky.svg" width="40px" />
             </a-tooltip>
           </div>
           <div class="operation-action-item save-btb" @click="handleSave">
             <a-tooltip title="Save">
-              <i class="bi bi-save" style="font-size: 20px;"></i>
+              <i class="bi bi-save" style="font-size: 20px"></i>
             </a-tooltip>
           </div>
           <div class="operation-action-item"></div>
         </div>
         <div class="fixed-bar title-bar">
-          <div @click="handleJumpToHome" class=" action-item return-home">
+          <div @click="handleJumpToHome" class="action-item return-home">
             <i class="bi bi-caret-left"></i>
           </div>
-          <a-divider type="vertical" style="height: 32px;"></a-divider>
+          <a-divider type="vertical" style="height: 32px"></a-divider>
           <div class="title">
             <span>{{ title }}</span>
           </div>
-          <div class=" action-item edit-btn">
+          <div class="action-item edit-btn">
             <i class="bi bi-pencil"></i>
           </div>
-          <a-divider type="vertical" style="height: 32px;"></a-divider>
-          <div class=" action-item shot-btn" @click="handleScreenShot">
+          <a-divider type="vertical" style="height: 32px"></a-divider>
+          <div class="action-item shot-btn" @click="handleScreenShot">
             <i class="bi bi-camera"></i>
           </div>
         </div>
         <div class="fixed-bar zoom-bar"></div>
-
+        <div class="fixed-bar summary-panel">
+          <div class="summary-header">
+            <span>Summary</span>
+            <i class="bi bi-x close-btn"></i>
+          </div>
+          <div class="summary-content">
+            <makedown-viewer :text="summaryContent"></makedown-viewer>
+          </div>
+          <a-button
+            type="primary"
+            class="generate-summary-btn"
+            @click="handleGenerateSummary"
+            >Generate</a-button
+          >
+        </div>
       </div>
     </div>
-
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
-import flowViewer from '../components/FlowViewer.vue'
-import { useRouter, useRoute } from 'vue-router';
-import { useFlowStore } from '../store/flowStore';
-import { useScreenshot } from "../components/useScreenShot"
-import { useVueFlow } from '@vue-flow/core';
-import useDragAndDrop from '../components/useDargAndDrop'
-import FlowSelect from '../components/FlowSelectNode.vue';
-import FlowForm from '../components/FlowFormNode.vue';
-import FlowText from '../components/AiTextNode.vue';
-import BilibiliVideo from '../components/BiliBiliVideoNode.vue';
-import { message } from 'ant-design-vue';
+import { ref, watch, onMounted, computed } from "vue";
+import flowViewer from "../components/FlowViewer.vue";
+import { useRouter, useRoute } from "vue-router";
+import { useFlowStore } from "../store/flowStore";
+import { useScreenshot } from "../components/useScreenShot";
+import { useVueFlow } from "@vue-flow/core";
+import useDragAndDrop from "../components/useDargAndDrop";
+import FlowSelect from "../components/FlowSelectNode.vue";
+import FlowForm from "../components/FlowFormNode.vue";
+import FlowText from "../components/AiTextNode.vue";
+import BilibiliVideo from "../components/BiliBiliVideoNode.vue";
+import { message } from "ant-design-vue";
+import MakedownViewer from "../components/MakedownViewer.vue";
 
 defineOptions({
   components: {
     FlowSelect,
     FlowForm,
     FlowText,
-    BilibiliVideo
-  }
-})
-const stickyPanelClose = ref(true)
+    BilibiliVideo,
+    MakedownViewer,
+  },
+});
+const stickyPanelClose = ref(true);
 const stickySqrt = ref([
   {
-    background: "rgb(251, 247, 192)"
+    background: "rgb(251, 247, 192)",
   },
   {
-    background: "#cceeff"
+    background: "#cceeff",
   },
   {
-    background: "rgb(220, 250, 240)"
+    background: "rgb(220, 250, 240)",
   },
   {
-    background: "rgb(255, 233, 255)"
+    background: "rgb(255, 233, 255)",
   },
   {
-    background: "rgb(252, 234, 118)"
+    background: "rgb(252, 234, 118)",
   },
   {
-    background: "rgb(145, 210, 252)"
+    background: "rgb(145, 210, 252)",
   },
   {
-    background: "rgb(131, 229, 208)"
+    background: "rgb(131, 229, 208)",
   },
   {
-    background: "rgb(235, 162, 248)"
-  }
-])
-const route = useRoute()
+    background: "rgb(235, 162, 248)",
+  },
+]);
+const route = useRoute();
 const handleStickyPanelClose = () => {
-  stickyPanelClose.value = true
-}
-document.addEventListener('click', handleStickyPanelClose)
+  stickyPanelClose.value = true;
+};
+document.addEventListener("click", handleStickyPanelClose);
 
 const handelShowStickPanel = (e) => {
-  e.stopPropagation()
-  stickyPanelClose.value = false
-}
-const { onDragStart } = useDragAndDrop()
+  e.stopPropagation();
+  stickyPanelClose.value = false;
+};
+const { onDragStart } = useDragAndDrop();
 
 const { vueFlowRef } = useVueFlow();
-const flowStore = useFlowStore()
-flowStore.setId(route.params.id)
-flowStore.getFlow()
+const flowStore = useFlowStore();
+flowStore.setId(route.params.id);
+flowStore.getFlow();
 
-const { capture } = useScreenshot()
+const { capture } = useScreenshot();
 
-const router = useRouter()
+const router = useRouter();
 const handleJumpToHome = () => {
-  router.push('/')
-}
-const panel = ref(null)
+  router.push("/");
+};
+const panel = ref(null);
 onMounted(() => {
-  setPanel(showPanel.value)
-})
+  setPanel(showPanel.value);
+});
 
 const handleSave = async () => {
   const data = await capture(vueFlowRef.value, { shouldDownload: false });
-  await flowStore.saveFlow(data)
-  message.success('Save Success')
-}
+  await flowStore.saveFlow(data);
+  message.success("Save Success");
+};
 
 const recommendNodes = computed(() => {
-  return flowStore.recommendNodes
-}
-)
-const title = computed(() => flowStore.name)
+  return flowStore.recommendNodes;
+});
+const title = computed(() => flowStore.name);
 
-const showPanel = ref(true)
+const showPanel = ref(true);
 const handleClosePanel = () => {
-  showPanel.value = false
-}
+  showPanel.value = false;
+};
 const handelShowPanel = () => {
-  showPanel.value = !showPanel.value
-}
+  showPanel.value = !showPanel.value;
+};
 const handleScreenShot = () => {
   if (!vueFlowRef.value) {
-    console.warn('VueFlow element not found');
+    console.warn("VueFlow element not found");
     return;
   }
 
   capture(vueFlowRef.value, { shouldDownload: true });
-}
-const loadingGenerate = ref(false)
-const handleRegenerate = async () => {
+};
+const loadingGenerate = ref(false);
+const summaryContent = ref("Summary Content");
 
-  loadingGenerate.value = true
-  await flowStore.fetchNewNodes()
-  loadingGenerate.value = false
-}
+const handleRegenerate = async () => {
+  loadingGenerate.value = true;
+  await flowStore.fetchNewNodes();
+
+  summaryContent.value = answer;
+  loadingGenerate.value = false;
+};
+
+const handleGenerateSummary = async () => {
+  const answer = await flowStore.getAnswer();
+  summaryContent.value = answer;
+};
 
 function setPanel(open) {
   if (open) {
-      panel.value.style.width = '356px'
-  }
-  else {
-    panel.value.style.width = '0px'
+    panel.value.style.width = "356px";
+  } else {
+    panel.value.style.width = "0px";
   }
 }
-watch(() => showPanel.value, (newVal) => {
-  setPanel(newVal)
-})
+watch(
+  () => showPanel.value,
+  (newVal) => {
+    setPanel(newVal);
+  }
+);
 </script>
 <style lang="less" scoped>
 .main-wrapper {
@@ -232,7 +287,6 @@ watch(() => showPanel.value, (newVal) => {
         align-items: center;
         box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.1);
 
-
         .close-btn {
           margin-right: 8px;
           cursor: pointer;
@@ -243,7 +297,6 @@ watch(() => showPanel.value, (newVal) => {
           margin-left: 16px;
           font-size: 20px;
         }
-
       }
 
       .left-panel-body {
@@ -258,7 +311,6 @@ watch(() => showPanel.value, (newVal) => {
           padding: 4px 8px;
           .card-item {
             margin-bottom: 12px;
-
           }
         }
 
@@ -334,7 +386,6 @@ watch(() => showPanel.value, (newVal) => {
 
             .sticky-sqrt:hover {
               margin-top: -4px;
-
             }
           }
         }
@@ -360,7 +411,6 @@ watch(() => showPanel.value, (newVal) => {
         box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
         border-radius: 12px;
         flex-direction: column;
-
 
         .operation-action-item {
           width: 32px;
@@ -402,14 +452,12 @@ watch(() => showPanel.value, (newVal) => {
           display: flex;
           justify-content: center;
           align-items: center;
-
         }
 
         .action-item {
           width: 32px;
           border-radius: 4px;
           margin-left: 4px;
-
         }
 
         .shot-btn {
@@ -423,7 +471,6 @@ watch(() => showPanel.value, (newVal) => {
         .shot-btn:hover {
           background: #f0f0f0;
         }
-
 
         .edit-btn {
           width: 32px;
@@ -441,8 +488,37 @@ watch(() => showPanel.value, (newVal) => {
           background: #f0f0f0;
         }
       }
+
+      .summary-panel {
+        width: 500px;
+        height: 800px;
+        top: 20px;
+        right: 20px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .summary-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 18px;
+          font-weight: bold;
+
+          .close-btn {
+            cursor: pointer;
+            font-size: 24px;
+          }
+        }
+
+        .summary-content {
+          flex: 1;
+          overflow: auto;
+          margin-top: 16px;
+        }
+      }
     }
   }
-
 }
 </style>
