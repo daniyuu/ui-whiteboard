@@ -49,3 +49,8 @@ export async function getNewAINodes(id) {
   const res = await request.post(`/whiteboard/${id}/insights`);
   return res["related_insights"];
 }
+
+export async function getNewSearchNodesV2(id) {
+  const res = await request.post(`/whiteboard/${id}/search`);
+  return res["search_results"];
+}
