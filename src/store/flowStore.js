@@ -1,10 +1,11 @@
-import _, { remove } from "lodash";
+import _, { get, remove } from "lodash";
 import { defineStore } from "pinia";
 import {
   getWhiteBoardById,
   updateWhiteBoard,
   getNewFormNodes,
   getNewSearchNodes,
+  getNewSearchNodesV2,
   getNewAINodes,
   getAnswer,
 } from "../api";
@@ -135,9 +136,12 @@ export const useFlowStore = defineStore("flow", {
       const promises = [
         getNewFormNodes(this.id),
         getNewSearchNodes(this.id),
+        getNewSearchNodesV2(this.id),
         getNewAINodes(this.id),
       ];
-      const [formNodes, searchNodes, aiNodes] = await Promise.all(promises);
+      const [formNodes, searchNodes, searhNodesV2, aiNodes] = await Promise.all(
+        promises
+      );
       console.log(formNodes, searchNodes, aiNodes);
       this.recommendNodes = [
         ...formNodes.map((node) => {
@@ -171,6 +175,16 @@ export const useFlowStore = defineStore("flow", {
               dataType: "text",
               created_by: "ai",
               content: node,
+            },
+          };
+        }),
+        ...searhNodesV2.map((node) => {
+          return {
+            type: node.type,
+            data: {
+              id: nanoid(),
+              ...node,
+              created_by: "search",
             },
           };
         }),
