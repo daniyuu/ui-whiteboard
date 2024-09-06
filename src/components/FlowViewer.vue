@@ -1,61 +1,78 @@
 <template>
-    <div class="basic-flow" @drop="onDrop">
-        <VueFlow :dark="dark" :nodes="nodeData" :edges="edges" @dragover="onDragOver" @dragleave="onDragLeave"
-            :class="{ dark }" :default-viewport="{ zoom: 1 }" :min-zoom="0.2" :max-zoom="4">
-            <template #node-flow-form="props">
-                <FormNode :data="props.data" />
-            </template>
-            <template #node-flow-select="props">
-                <FlowSelectNode :data="props.data" />
-            </template>
-            <template #node-flow-text="props">
-                <AiTextNode :data="props.data" />
-            </template>
-            <template #node-sticky="props">
-                <StickyNode :data="props.data" />
-            </template>
-            <template #node-bilibili-video="props">
-                <BiliBiliVideoNode :data="props.data" />
-            </template>
-            <DropzoneBackground class="background" :style="{
-                backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
-                transition: 'background-color 0.2s ease',
-            }">
-                <p v-if="isDragOver">Drop here</p>
-            </DropzoneBackground>
-            <MiniMap />
-        </VueFlow>
-    </div>
-
+  <div class="basic-flow" @drop="onDrop">
+    <VueFlow
+      :dark="dark"
+      :nodes="nodeData"
+      :edges="edges"
+      @dragover="onDragOver"
+      @dragleave="onDragLeave"
+      :class="{ dark }"
+      :default-viewport="{ zoom: 1 }"
+      :min-zoom="0.2"
+      :max-zoom="4"
+    >
+      <template #node-flow-form="props">
+        <FormNode :data="props.data" />
+      </template>
+      <template #node-flow-select="props">
+        <FlowSelectNode :data="props.data" />
+      </template>
+      <template #node-flow-text="props">
+        <AiTextNode :data="props.data" />
+      </template>
+      <template #node-sticky="props">
+        <StickyNode :data="props.data" />
+      </template>
+      <template #node-bilibili-video="props">
+        <BiliBiliVideoNode :data="props.data" />
+      </template>
+      <DropzoneBackground
+        class="background"
+        :style="{
+          backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
+          transition: 'background-color 0.2s ease',
+        }"
+      >
+        <p v-if="isDragOver">Drop here</p>
+      </DropzoneBackground>
+      <MiniMap />
+    </VueFlow>
+  </div>
 </template>
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { VueFlow, useVueFlow } from '@vue-flow/core'
-import { Background } from '@vue-flow/background'
-import { ControlButton, Controls } from '@vue-flow/controls'
-import { MiniMap } from '@vue-flow/minimap'
-import FormNode from './FlowFormNode.vue'
-import AiTextNode from './AiTextNode.vue'
-import BiliBiliVideoNode from './BiliBiliVideoNode.vue'
-import { useFlowStore } from '../store/flowStore'
-import useDragAndDrop from './useDargAndDrop'
-import StickyNode from './StickyNode.vue'
-import FlowSelectNode from './FlowSelectNode.vue'
+import { ref, onMounted, computed } from "vue";
+import { VueFlow, useVueFlow } from "@vue-flow/core";
+import { Background } from "@vue-flow/background";
+import { ControlButton, Controls } from "@vue-flow/controls";
+import { MiniMap } from "@vue-flow/minimap";
+import FormNode from "./FlowFormNode.vue";
+import AiTextNode from "./AiTextNode.vue";
+import BiliBiliVideoNode from "./BiliBiliVideoNode.vue";
+import { useFlowStore } from "../store/flowStore";
+import useDragAndDrop from "./useDargAndDrop";
+import StickyNode from "./StickyNode.vue";
+import FlowSelectNode from "./FlowSelectNode.vue";
 
-const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
+const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 
-const store = useFlowStore()
-const { onInit, onNodeDragStop, onConnect, setViewport,
-    onNodesChange, applyNodeChanges, applyEdgeChange } = useVueFlow()
-const dark = ref(true)
+const store = useFlowStore();
+const {
+  onInit,
+  onNodeDragStop,
+  onConnect,
+  setViewport,
+  onNodesChange,
+  applyNodeChanges,
+  applyEdgeChange,
+} = useVueFlow();
+const dark = ref(true);
 const triggerDark = () => {
-    dark.value = !dark.value
-}
+  dark.value = !dark.value;
+};
 
+const nodeData = computed(() => store.nodes);
 
-const nodeData = computed(() => store.nodes)
-
-const edges = computed(() => store.edges)
+const edges = computed(() => store.edges);
 // const nodeData = ref([
 //     {
 //         id: '1',
@@ -119,25 +136,23 @@ const edges = computed(() => store.edges)
 //     },
 // ])
 onInit((vueFlowInstance) => {
-    // instance is the same as the return of `useVueFlow`
-    vueFlowInstance.fitView()
-})
+  // instance is the same as the return of `useVueFlow`
+  vueFlowInstance.fitView();
+});
 onNodeDragStop(({ event, nodes, node }) => {
-    console.log('Node Drag Stop', { event, nodes, node })
-})
+  console.log("Node Drag Stop", { event, nodes, node });
+});
 
 onNodesChange(async (changes) => {
-    applyNodeChanges(changes)
-    changes.forEach((change) => {
-        if(change.type === 'add') {
-            console.log('add', change)
-        }else if(change.type === 'remove') {
-            store.removeNode(change.id)
-        }
-
-
-    })
-})
+  applyNodeChanges(changes);
+  changes.forEach((change) => {
+    if (change.type === "add") {
+      console.log("add", change);
+    } else if (change.type === "remove") {
+      store.removeNode(change.id);
+    }
+  });
+});
 
 /**
  * To update a node or multiple nodes, you can
@@ -146,38 +161,36 @@ onNodesChange(async (changes) => {
  * 3. Create a new array of nodes and pass it to the `nodes` ref
  */
 function updatePos() {
-    nodeData.value = nodeData.value.map((node) => {
-        return {
-            ...node,
-            position: {
-                x: Math.random() * 400,
-                y: Math.random() * 400,
-            },
-        }
-    })
+  nodeData.value = nodeData.value.map((node) => {
+    return {
+      ...node,
+      position: {
+        x: Math.random() * 400,
+        y: Math.random() * 400,
+      },
+    };
+  });
 }
-
 
 /**
  * Resets the current viewport transformation (zoom & pan)
  */
 function resetTransform() {
-    setViewport({ x: 0, y: 0, zoom: 1 })
+  setViewport({ x: 0, y: 0, zoom: 1 });
 }
 
 function toggleDarkMode() {
-    dark.value = !dark.value
+  dark.value = !dark.value;
 }
-
 </script>
 <style>
 .basic-flow {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 .background {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 </style>
