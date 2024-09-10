@@ -1,4 +1,4 @@
-import _, { get, remove } from "lodash";
+import _ from "lodash";
 import { defineStore } from "pinia";
 import {
   getWhiteBoardById,
@@ -53,7 +53,7 @@ export const useFlowStore = defineStore("flow", {
       this.originalData = data;
       this.name = data.name;
       this.avatar = data.avatar;
-      console.log(edges, nodes, data);
+      this.recommendNodes = [];
     },
 
     async saveFlow(avatar) {
@@ -98,7 +98,7 @@ export const useFlowStore = defineStore("flow", {
         },
       };
 
-      const res = await updateWhiteBoard(this.id, data);
+      await updateWhiteBoard(this.id, data);
     },
 
     removeRecommendNode(id) {
@@ -139,7 +139,7 @@ export const useFlowStore = defineStore("flow", {
         getNewSearchNodesV2(this.id),
         getNewAINodes(this.id),
       ];
-      const [formNodes, searchNodes, searhNodesV2, aiNodes] = await Promise.all(
+      const [formNodes, searchNodes, searchNodesV2, aiNodes] = await Promise.all(
         promises
       );
       console.log(formNodes, searchNodes, aiNodes);
@@ -178,7 +178,7 @@ export const useFlowStore = defineStore("flow", {
             },
           };
         }),
-        ...searhNodesV2.map((node) => {
+        ..._.map(searchNodesV2, (node) => {
           return {
             type: node.type,
             data: {

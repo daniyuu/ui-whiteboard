@@ -1,19 +1,21 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
-    <div class="sticky-node" @click="handleClick":style="style">
+    <div class="sticky-node" @click="handleClick" :style="style">
         <div class="card-body">
-            <a-textarea ref="textarea" class="input" auto-size v-model:value="data.content" :rows="3" placeholder="" ></a-textarea>
+            <a-textarea ref="textarea" class="input" auto-size v-model:value="data.content" :rows="3"
+                placeholder=""></a-textarea>
         </div>
     </div>
 </template>
 <script setup>
-import _ from 'lodash'
-import { ref, computed, handleError } from 'vue'
+import { ref, computed } from 'vue'
 const textarea = ref(null)
 const props = defineProps({
     data: {
         type: Object,
         default() {
             return {
+                content: ""
             }
         }
     }

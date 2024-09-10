@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-deprecated-slot-attribute -->
 <template>
     <div class="home-page">
         <div class="banner">
@@ -14,7 +15,7 @@
                 </div>
                 <div class="card" v-for="item in whiteboardData" :key="item.title" @click="handleJumpToFlow(item)">
                     <div class="card-prevew">
-                        <img style="width: 100%;" :src=" _.get(item.ui_attributes,'avatar')"/>
+                        <img style="width: 100%;" :src="_.get(item.ui_attributes, 'avatar')" />
                     </div>
                     <div class="card-info-bar">
                         <div class="card-info-left-side">
@@ -59,6 +60,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
 import _ from 'lodash'
+// eslint-disable-next-line no-unused-vars
 import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
 
 

@@ -1,4 +1,4 @@
-<script  setup>
+<script setup>
 import { Background } from '@vue-flow/background'
 </script>
 

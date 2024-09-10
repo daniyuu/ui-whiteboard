@@ -11,69 +11,47 @@
           <a-spin :spinning="loadingGenerate" style="width: 100%" />
           <div class="node-area" draggable="false">
             <div draggable="false"></div>
-            <component
-              style="box-shadow: none"
-              class="card-item"
-              draggable="true"
-              @dragstart="onDragStart($event, item.type, item.data)"
-              v-for="(item, index) in recommendNodes"
-              :key="index"
-              :data="item.data"
-              :is="item.type"
-            ></component>
+            <component style="box-shadow: none" class="card-item" draggable="true"
+              @dragstart="onDragStart($event, item.type, item.data)" v-for="(item, index) in recommendNodes"
+              :key="index" :data="item.data" :is="item.type"></component>
           </div>
-          <a-button
-            :loading="loadingGenerate"
-            type="default"
-            class="regenerate-btn"
-            @click="handleRegenerate"
-            >Regenerate</a-button
-          >
+          <a-button :loading="loadingGenerate" type="default" class="regenerate-btn"
+            @click="handleRegenerate">Regenerate</a-button>
         </div>
       </div>
       <div class="right-side">
-        <div
-          class="sticky-bar fixed-bar"
-          :class="stickyPanelClose ? 'sticky-panel-close' : ''"
-        >
+        <div class="sticky-bar fixed-bar" :class="stickyPanelClose ? 'sticky-panel-close' : ''">
           <div class="sticky-tools--block">
             <div class="sticky-tools--head">Square (1:1)</div>
             <div class="sticky-tools--wrap">
-              <div
-                class="sticky-sqrt"
-                draggable="true"
-                @dragstart="
-                  onDragStart($event, 'sticky', {
-                    created_by: 'user',
-                    backgroundColor: item.background,
-                  })
-                "
-                v-for="item in stickySqrt"
-                :style="`background: ${item.background}`"
-              ></div>
+              <div class="sticky-sqrt" draggable="true" @dragstart="
+                onDragStart($event, 'sticky', {
+                  created_by: 'user',
+                  backgroundColor: item.background,
+                })
+                " v-for="item in stickySqrt" :key="item.id" :style="`background: ${item.background}`"></div>
             </div>
           </div>
         </div>
         <div class="fixed-bar side-bar">
-          <div
-            class="operation-action-item card-button"
-            @click="handelShowPanel"
-          >
+          <div class="operation-action-item card-button" @click="handelShowPanel">
             <a-tooltip title="Show Toolbox">
               <img src="/img/card.svg" width="30" />
             </a-tooltip>
           </div>
-          <div
-            class="operation-action-item stick-button"
-            @click="handelShowStickPanel"
-          >
+          <div class="operation-action-item stick-button" @click="handelShowStickPanel">
             <a-tooltip title="Show Toolbox">
               <img src="/img/sticky.svg" width="40px" />
             </a-tooltip>
           </div>
+          <div class="operation-action-item save-btb" @click="handleGenerateSummary">
+            <a-tooltip title="Summary">
+              <i class="bi bi-file-earmark-text" style="font-size: 20px"></i>
+            </a-tooltip>
+          </div>
           <div class="operation-action-item save-btb" @click="handleSave">
             <a-tooltip title="Save">
-              <i class="bi bi-save" style="font-size: 20px"></i>
+              <i class="bi bi-save"></i>
             </a-tooltip>
           </div>
           <div class="operation-action-item"></div>
@@ -95,20 +73,16 @@
           </div>
         </div>
         <div class="fixed-bar zoom-bar"></div>
-        <div class="fixed-bar summary-panel">
+        <div class="fixed-bar summary-panel" :class="showSummaryPanel ? '' : 'summary-panel-hide'">
           <div class="summary-header">
             <span>Summary</span>
-            <i class="bi bi-x close-btn"></i>
+            <i class="bi bi-x close-btn" @click="handleCloseSummaryPanel"></i>
           </div>
           <div class="summary-content">
             <makedown-viewer :text="summaryContent"></makedown-viewer>
           </div>
-          <a-button
-            type="primary"
-            class="generate-summary-btn"
-            @click="handleGenerateSummary"
-            >Generate</a-button
-          >
+          <a-button type="primary" class="generate-summary-btn" @click="handleGenerateSummary"
+            :loading="summaryPanelLoading">Generate</a-button>
         </div>
       </div>
     </div>
@@ -138,6 +112,8 @@ defineOptions({
     MakedownViewer,
   },
 });
+const showSummaryPanel = ref(false);
+const summaryPanelLoading = ref(false);
 const stickyPanelClose = ref(true);
 const stickySqrt = ref([
   {
@@ -225,14 +201,19 @@ const summaryContent = ref("Summary Content");
 const handleRegenerate = async () => {
   loadingGenerate.value = true;
   await flowStore.fetchNewNodes();
-
-  summaryContent.value = answer;
   loadingGenerate.value = false;
 };
 
 const handleGenerateSummary = async () => {
+  showSummaryPanel.value = true;
+  summaryPanelLoading.value = true;
   const answer = await flowStore.getAnswer();
   summaryContent.value = answer;
+  summaryPanelLoading.value = false;
+};
+
+const handleCloseSummaryPanel = () => {
+  showSummaryPanel.value = false;
 };
 
 function setPanel(open) {
@@ -309,6 +290,7 @@ watch(
           height: calc(100vh - 140px);
           overflow: auto;
           padding: 4px 8px;
+
           .card-item {
             margin-bottom: 12px;
           }
@@ -489,6 +471,7 @@ watch(
         }
       }
 
+
       .summary-panel {
         width: 500px;
         height: 800px;
@@ -498,6 +481,7 @@ watch(
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        transition: ease-in-out 0.4s;
 
         .summary-header {
           display: flex;
@@ -518,6 +502,12 @@ watch(
           margin-top: 16px;
         }
       }
+
+      .summary-panel-hide {
+        position: fixed;
+        right: -600px;
+      }
+
     }
   }
 }

@@ -1,16 +1,7 @@
 <template>
   <div class="basic-flow" @drop="onDrop">
-    <VueFlow
-      :dark="dark"
-      :nodes="nodeData"
-      :edges="edges"
-      @dragover="onDragOver"
-      @dragleave="onDragLeave"
-      :class="{ dark }"
-      :default-viewport="{ zoom: 1 }"
-      :min-zoom="0.2"
-      :max-zoom="4"
-    >
+    <VueFlow :dark="dark" :nodes="nodeData" :edges="edges" @dragover="onDragOver" @dragleave="onDragLeave"
+      :class="{ dark }" :default-viewport="{ zoom: 1 }" :min-zoom="0.2" :max-zoom="4">
       <template #node-flow-form="props">
         <FormNode :data="props.data" />
       </template>
@@ -26,13 +17,10 @@
       <template #node-bilibili-video="props">
         <BiliBiliVideoNode :data="props.data" />
       </template>
-      <DropzoneBackground
-        class="background"
-        :style="{
-          backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
-          transition: 'background-color 0.2s ease',
-        }"
-      >
+      <DropzoneBackground class="background" :style="{
+        backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
+        transition: 'background-color 0.2s ease',
+      }">
         <p v-if="isDragOver">Drop here</p>
       </DropzoneBackground>
       <MiniMap />
@@ -40,10 +28,8 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { VueFlow, useVueFlow } from "@vue-flow/core";
-import { Background } from "@vue-flow/background";
-import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 import FormNode from "./FlowFormNode.vue";
 import AiTextNode from "./AiTextNode.vue";
@@ -59,16 +45,10 @@ const store = useFlowStore();
 const {
   onInit,
   onNodeDragStop,
-  onConnect,
-  setViewport,
   onNodesChange,
   applyNodeChanges,
-  applyEdgeChange,
 } = useVueFlow();
 const dark = ref(true);
-const triggerDark = () => {
-  dark.value = !dark.value;
-};
 
 const nodeData = computed(() => store.nodes);
 
@@ -154,34 +134,7 @@ onNodesChange(async (changes) => {
   });
 });
 
-/**
- * To update a node or multiple nodes, you can
- * 1. Mutate the node objects *if* you're using `v-model`
- * 2. Use the `updateNode` method (from `useVueFlow`) to update the node(s)
- * 3. Create a new array of nodes and pass it to the `nodes` ref
- */
-function updatePos() {
-  nodeData.value = nodeData.value.map((node) => {
-    return {
-      ...node,
-      position: {
-        x: Math.random() * 400,
-        y: Math.random() * 400,
-      },
-    };
-  });
-}
 
-/**
- * Resets the current viewport transformation (zoom & pan)
- */
-function resetTransform() {
-  setViewport({ x: 0, y: 0, zoom: 1 });
-}
-
-function toggleDarkMode() {
-  dark.value = !dark.value;
-}
 </script>
 <style>
 .basic-flow {
