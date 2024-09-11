@@ -169,6 +169,8 @@ const handleRename = () => {
                 }
 
                 .card-info-bar {
+                    position: relative;
+                    z-index: 10000;
                     display: flex;
                     justify-content: space-between;
                     padding: 0px 12px;

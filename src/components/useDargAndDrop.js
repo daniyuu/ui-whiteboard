@@ -1,14 +1,6 @@
 import { useVueFlow } from "@vue-flow/core";
 import { ref, watch } from "vue";
 import { useFlowStore } from "../store/flowStore";
-import { nanoid } from "nanoid";
-
-/**
- * @returns {string} - A unique id.
- */
-function getId() {
-  return nanoid(12);
-}
 
 const state = {
   draggedType: ref(null),
@@ -22,11 +14,7 @@ export default function useDragAndDrop() {
   const { draggedType, isDragOver, isDragging } = state;
 
   const {
-    addNodes,
     screenToFlowCoordinate,
-    onNodesInitialized,
-    updateNode,
-    toObject,
   } = useVueFlow();
 
   watch(isDragging, (dragging) => {
@@ -81,46 +69,20 @@ export default function useDragAndDrop() {
       x: event.clientX,
       y: event.clientY,
     });
-    if (!id) {
-      id = getId();
-    }
+
 
     if (!draggedType.value) {
       return;
     }
-
     const newNode = {
       id,
       type: draggedType.value,
       position,
       data: { id, ...data },
     };
-
-    const { off } = onNodesInitialized(() => {
-      updateNode(id, (node) => ({
-        position: {
-          x: node.position.x - node.dimensions.width / 2,
-          y: node.position.y - node.dimensions.height / 2,
-        },
-      }));
-
-      off();
-    });
     store.removeRecommendNode(id);
-    addNodes(newNode);
+    store.addNode(newNode);
   }
-
-  function autoSave() {
-    if (window.timer) {
-      clearTimeout(window.timer);
-    }
-    window.timer = setTimeout(() => {
-      store.setProperty({ nodes: toObject().nodes });
-      store.saveFlow();
-      autoSave();
-    }, 10000);
-  }
-  autoSave();
   return {
     draggedType,
     isDragOver,

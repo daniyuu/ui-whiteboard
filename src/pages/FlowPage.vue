@@ -2,7 +2,7 @@
   <div class="main-wrapper">
     <flowViewer></flowViewer>
     <div class="operation-layer">
-      <div class="left-panel" ref="panel">
+      <div class="left-panel glass-blur" ref="panel">
         <div class="left-panel-header">
           <div class="left-panel-title">Toolbox</div>
           <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="right-side">
-        <div class="sticky-bar fixed-bar" :class="stickyPanelClose ? 'sticky-panel-close' : ''">
+        <div class="sticky-bar glass-blur fixed-bar" :class="stickyPanelClose ? 'sticky-panel-close' : ''">
           <div class="sticky-tools--block">
             <div class="sticky-tools--head">Square (1:1)</div>
             <div class="sticky-tools--wrap">
@@ -33,30 +33,48 @@
             </div>
           </div>
         </div>
-        <div class="fixed-bar side-bar">
-          <div class="operation-action-item card-button" @click="handelShowPanel">
-            <a-tooltip title="Show Toolbox">
-              <img src="/img/card.svg" width="30" />
-            </a-tooltip>
+        <div class="fixed-bar bottom-bar">
+          <div class="element-area glass-blur">
+            <div class="operation-action-item sticky-button" @click="handelShowPanel">
+              <a-tooltip title="Show Toolbox">
+                <img src="/img/card.svg" width="24px" />
+              </a-tooltip>
+            </div>
+            <div class="operation-action-item sticky-button" @dragstart="
+              onDragStart($event, 'sticky', {
+                created_by: 'user',
+                backgroundColor: stickySqrt[~~(Math.random() * stickySqrt.length)].background,
+              })
+              " @click="handelShowStickPanel">
+              <a-tooltip title="Show sticky">
+                <img src="/img/sticky.svg" width="24px" />
+              </a-tooltip>
+            </div>
+            <div class="operation-action-item sticky-button" @click="addImage">
+              <a-tooltip title="Add Image">
+                <img src="/img/add-image.svg" width="24px" />
+              </a-tooltip>
+            </div>
+            <div class="operation-action-item sticky-button" @click="addLink">
+              <a-tooltip title="Add Link">
+                <img src="/img/add-link.svg" width="20px" />
+              </a-tooltip>
+            </div>
+            <div class="operation-action-item sticky-button" @click="handleSave">
+              <a-tooltip title="Save">
+                <img src="/img/save.svg" width="24px" />
+              </a-tooltip>
+            </div>
           </div>
-          <div class="operation-action-item stick-button" @click="handelShowStickPanel">
-            <a-tooltip title="Show Toolbox">
-              <img src="/img/sticky.svg" width="40px" />
-            </a-tooltip>
+          <div class="generate-btn glass-blur">
+            <div class="operation-action-item" @click="handleGenerateSummary">
+              <a-tooltip title="Summary">
+                <img src="/img/result.svg" width="24px" />
+              </a-tooltip>
+            </div>
           </div>
-          <div class="operation-action-item save-btb" @click="handleGenerateSummary">
-            <a-tooltip title="Summary">
-              <i class="bi bi-file-earmark-text" style="font-size: 20px"></i>
-            </a-tooltip>
-          </div>
-          <div class="operation-action-item save-btb" @click="handleSave">
-            <a-tooltip title="Save">
-              <i class="bi bi-save"></i>
-            </a-tooltip>
-          </div>
-          <div class="operation-action-item"></div>
         </div>
-        <div class="fixed-bar title-bar">
+        <div class="fixed-bar glass-blur title-bar">
           <div @click="handleJumpToHome" class="action-item return-home">
             <i class="bi bi-caret-left"></i>
           </div>
@@ -72,8 +90,8 @@
             <i class="bi bi-camera"></i>
           </div>
         </div>
-        <div class="fixed-bar zoom-bar"></div>
-        <div class="fixed-bar summary-panel" :class="showSummaryPanel ? '' : 'summary-panel-hide'">
+        <div class="fixed-bar glass-blur zoom-bar"></div>
+        <div class="fixed-bar glass-blur summary-panel" :class="showSummaryPanel ? '' : 'summary-panel-hide'">
           <div class="summary-header">
             <span>Summary</span>
             <i class="bi bi-x close-btn" @click="handleCloseSummaryPanel"></i>
@@ -89,7 +107,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted, computed, onUnmounted } from "vue";
 import flowViewer from "../components/FlowViewer.vue";
 import { useRouter, useRoute } from "vue-router";
 import { useFlowStore } from "../store/flowStore";
@@ -102,7 +120,8 @@ import FlowText from "../components/AiTextNode.vue";
 import BilibiliVideo from "../components/BiliBiliVideoNode.vue";
 import { message } from "ant-design-vue";
 import MakedownViewer from "../components/MakedownViewer.vue";
-
+import { handleGetImage2Base64 } from "../utils/file";
+const { capture } = useScreenshot();
 defineOptions({
   components: {
     FlowSelect,
@@ -111,6 +130,10 @@ defineOptions({
     BilibiliVideo,
     MakedownViewer,
   },
+});
+onUnmounted(() => {
+  document.removeEventListener("click", handleStickyPanelClose);
+  flowStore.ref = null
 });
 const showSummaryPanel = ref(false);
 const summaryPanelLoading = ref(false);
@@ -158,7 +181,7 @@ const flowStore = useFlowStore();
 flowStore.setId(route.params.id);
 flowStore.getFlow();
 
-const { capture } = useScreenshot();
+
 
 const router = useRouter();
 const handleJumpToHome = () => {
@@ -167,12 +190,33 @@ const handleJumpToHome = () => {
 const panel = ref(null);
 onMounted(() => {
   setPanel(showPanel.value);
+  flowStore.ref = vueFlowRef
 });
+function getRandomPOsition(maxX, maxY) {
+  return {
+    x: ~~(Math.random() * maxX),
+    y: ~~(Math.random() * maxY),
+  };
 
+}
 const handleSave = async () => {
-  const data = await capture(vueFlowRef.value, { shouldDownload: false });
-  await flowStore.saveFlow(data);
+  await flowStore.saveFlow();
   message.success("Save Success");
+};
+const addImage = async () => {
+  const b64ImageUrl = await handleGetImage2Base64();
+  if (!b64ImageUrl) {
+    return;
+  }
+  console.log(b64ImageUrl);
+  flowStore.addNode({
+    type: "image",
+    position: getRandomPOsition(800, 600),
+    data: {
+      created_by: 'user',
+      url: b64ImageUrl,
+    },
+  });
 };
 
 const recommendNodes = computed(() => {
@@ -218,9 +262,10 @@ const handleCloseSummaryPanel = () => {
 
 function setPanel(open) {
   if (open) {
-    panel.value.style.width = "356px";
+    panel.value.style.width = "342px";
   } else {
     panel.value.style.width = "0px";
+
   }
 }
 watch(
@@ -231,6 +276,19 @@ watch(
 );
 </script>
 <style lang="less" scoped>
+.glass-blur {
+  background-color: rgba(255, 255, 255, 0.616);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
 .main-wrapper {
   height: 100%;
   width: 100%;
@@ -245,17 +303,8 @@ watch(
     pointer-events: none;
 
     .left-panel {
-      width: 0px;
       pointer-events: all;
       height: 100%;
-      background-color: rgba(255, 255, 255, 0.438);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-      -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-      border-radius: 12px;
-      -webkit-border-radius: 12px;
       overflow: hidden;
       transition: ease-in-out 0.4s;
       box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
@@ -281,6 +330,8 @@ watch(
       }
 
       .left-panel-body {
+        width: 342px;
+        overflow: hidden;
         height: calc(100% - 64px);
         overflow: auto;
         padding: 8px 0px;
@@ -315,29 +366,58 @@ watch(
     .right-side {
       flex: 1;
       position: relative;
+      overflow: hidden;
+
 
       .fixed-bar {
         pointer-events: all;
         position: absolute;
-        background-color: rgba(255, 255, 255, 0.616);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-        -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-        border-radius: 12px;
-        -webkit-border-radius: 12px;
-        box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
-        border-radius: 6px;
+      }
+
+      .bottom-bar {
+        width: 500px;
+        height: 40px;
+        position: absolute;
+        bottom: 12px;
+        display: flex;
+        left: 50%;
+        transform: translate(-50%, 0);
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+
+        .element-area {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 0px 12px;
+
+          .sticky-button {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+
+        .generate-btn {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
       }
 
       .sticky-bar {
         width: 216px;
         height: 160px;
-        top: calc(40% - 30px);
-        left: 96px;
+        bottom: 60px;
+        left: 50%;
         align-items: center;
-        transform: translateY(-50%);
+        transform: translateX(-50%);
         padding: 8px 12px;
         transition: ease-in-out 0.4s;
         overflow: hidden;
@@ -374,10 +454,8 @@ watch(
       }
 
       .sticky-panel-close {
-        width: 0px;
-        padding: 0px;
-        left: 32px;
         box-shadow: none;
+        bottom: -400px;
       }
 
       .side-bar {
@@ -394,23 +472,6 @@ watch(
         border-radius: 12px;
         flex-direction: column;
 
-        .operation-action-item {
-          width: 32px;
-          height: 32px;
-          display: flex;
-          cursor: pointer;
-          justify-content: center;
-          align-items: center;
-          margin: 6px 0px;
-
-          &:last-child {
-            border-bottom: none;
-          }
-        }
-
-        .operation-action-item:hover {
-          background: #f0f0f0;
-        }
 
         .card-button {
           display: flex;
@@ -421,7 +482,7 @@ watch(
       }
 
       .title-bar {
-        height: 48px;
+        height: 40px;
         top: 20px;
         padding: 4px;
         display: flex;
@@ -474,8 +535,8 @@ watch(
 
       .summary-panel {
         width: 500px;
-        height: 800px;
-        top: 20px;
+        height: calc(100% - 60px);
+        top: 30px;
         right: 20px;
         padding: 16px;
         display: flex;
@@ -500,6 +561,8 @@ watch(
           flex: 1;
           overflow: auto;
           margin-top: 16px;
+          margin-bottom: 20px;
+
         }
       }
 
@@ -510,5 +573,22 @@ watch(
 
     }
   }
+}
+
+.operation-action-item {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.operation-action-item:hover {
+  background: #f0f0f0;
 }
 </style>

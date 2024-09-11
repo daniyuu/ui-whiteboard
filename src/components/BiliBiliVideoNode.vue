@@ -1,6 +1,10 @@
 <template>
   <div class="bilibili-node">
-    <div class="bilibili-header"></div>
+
+    <div class="bilibili-header">
+      <img src="/img/video.svg" width="20px" style="margin-top: -4px; margin-right: 4px;" />
+      {{ data.name }}
+    </div>
     <div class="bilibili-video">
       <iframe
         :src="`//player.bilibili.com/player.html?isOutside=true&aid=${data.aid}&bvid=${data.bvid}&cid=${data.cid}&page=1&autoplay=0`"
@@ -28,11 +32,21 @@ defineProps({
 .bilibili-node {
   border-radius: 4px;
   position: relative;
+  overflow: hidden;
 
   .bilibili-header {
-    background-color: rgb(255, 37, 128);
-    width: 100%;
-    height: 32px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    white-space: nowrap;
+    display: block;
+    color: #fff;
+    padding: 2px 24px 0 12px;
+    background-color: rgb(250, 72, 146);
+    width: 320px;
+    line-height: 28px;
+    height: 28px;
   }
 
   .bilibili-video {

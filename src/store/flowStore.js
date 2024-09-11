@@ -1,15 +1,77 @@
 import _ from "lodash";
 import { defineStore } from "pinia";
+import { useVueFlow } from "@vue-flow/core";
+import { useScreenshot } from "../components/useScreenShot";
+import { nanoid } from "nanoid";
+
+/**
+ * @returns {string} - A unique id.
+ */
+function getId() {
+  return nanoid(12);
+}
+
+const { capture } = useScreenshot();
+
 import {
   getWhiteBoardById,
   updateWhiteBoard,
   getNewFormNodes,
-  getNewSearchNodes,
   getNewSearchNodesV2,
   getNewAINodes,
   getAnswer,
 } from "../api";
-import { nanoid } from "nanoid";
+
+function filterSearchResultFromBilibili(searchList, max = 2) {
+  const nodes = []
+  searchList.forEach((item) => {
+    console.log(item);
+    const { url, name, type } = item;
+    if (type !== 'search-video') return
+    if (url.includes("bilibili")) {
+      const bvid = url.split("/")
+        .filter((item) => item.includes("BV"))[0]
+        .split("?")[0];
+      nodes.push({
+        type: "bilibili-video",
+        data: {
+          id: nanoid(),
+          name,
+          bvid,
+          created_by: "search",
+        },
+      });
+    }
+  });
+  return nodes.slice(0, max);
+}
+
+// eslint-disable-next-line no-unused-vars
+function calculateNodesCenter(nodes) {
+  let maxX = 0, maxY = 0, minX = 0, minY = 0;
+  nodes.forEach((node) => {
+    const { x, y } = node.position;
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+  });
+  console.log("max", maxX, maxY, minX, minY);
+  return {
+    x: (maxX + minX) / 2,
+    y: (maxY + minY) / 2,
+  };
+}
+// function filterSearchResultFromWeb(searchList, max = 2) {
+//   const nodes = []
+//   searchList.forEach((item) => {
+//     const { url, type } = item;
+
+//   });
+//   return nodes.slice(0, max);
+// }
+
+
 
 const parserData = (data) => {
   const nodes = _.get(data, "data.graph.nodes", []).map((node) => {
@@ -21,7 +83,6 @@ const parserData = (data) => {
     };
   });
   const edges = [];
-  console.log(nodes);
   return {
     nodes,
     edges,
@@ -31,13 +92,17 @@ const parserData = (data) => {
 export const useFlowStore = defineStore("flow", {
   state: () => {
     return {
+      flowOptions: useVueFlow(),
       id: "",
       nodes: [],
       edges: [],
-      recommendNodes: [],
+      recommendNodes: [
+      ],
       originalData: {},
       name: "",
       avatar: "",
+      ref: null
+
     };
   },
   actions: {
@@ -53,11 +118,14 @@ export const useFlowStore = defineStore("flow", {
       this.originalData = data;
       this.name = data.name;
       this.avatar = data.avatar;
+      this.flowOptions.onPaneReady((instance) => instance.fitView());
       this.recommendNodes = [];
     },
 
-    async saveFlow(avatar) {
-      if (avatar) {
+    async saveFlow() {
+      if (this.ref) {
+        console.log("capture", this.ref);
+        const avatar = await capture(this.ref, { shouldDownload: false });
         this.avatar = avatar;
       }
       const data = {
@@ -117,8 +185,27 @@ export const useFlowStore = defineStore("flow", {
       }
     },
     async addNode(node) {
-      this.nodes.push(node);
+      if (!node.id) {
+        node.id = getId();
+      }
+      const index = this.nodes.findIndex((n) => n.id === node.id);
+      if (index !== -1) {
+        this.nodes[index] = node;
+      } else {
+        this.nodes.push(node);
+        const { off } = this.flowOptions.onNodesInitialized(() => {
+          this.flowOptions.updateNode(node.id, (node) => ({
+            position: {
+              x: node.position.x - node.dimensions.width / 2,
+              y: node.position.y - node.dimensions.height / 2,
+            },
+          }));
+          off();
+        });
+        this.flowOptions.addNodes(node);
+      }
       await this.saveFlow();
+
     },
 
     async removeNode(id) {
@@ -127,28 +214,29 @@ export const useFlowStore = defineStore("flow", {
       await this.saveFlow();
     },
 
-    addEdge(edge) {
+    async addEdge(edge) {
       this.edges.push(edge);
+      this.flowOptions.addEdges(edge);
+      await this.saveFlow();
     },
 
     async fetchNewNodes() {
       await this.saveFlow();
       const promises = [
         getNewFormNodes(this.id),
-        getNewSearchNodes(this.id),
         getNewSearchNodesV2(this.id),
         getNewAINodes(this.id),
       ];
-      const [formNodes, searchNodes, searchNodesV2, aiNodes] = await Promise.all(
+      const [formNodes, searchNodesV2, aiNodes] = await Promise.all(
         promises
       );
-      console.log(formNodes, searchNodes, aiNodes);
-      this.recommendNodes = [
+      console.log(formNodes, searchNodesV2, aiNodes);
+      this.recommendNodes = _.shuffle([
         ...formNodes.map((node) => {
           return {
             type: node.type == "text" ? "flow-form" : "flow-select",
             data: {
-              id: nanoid(),
+              id: getId(),
               dataType: node.type,
               question: node.question,
               options: node.options,
@@ -157,21 +245,12 @@ export const useFlowStore = defineStore("flow", {
             },
           };
         }),
-        ...searchNodes.map((node) => {
-          return {
-            type: "bilibili-video",
-            data: {
-              id: nanoid(),
-              ...node,
-              created_by: "ai",
-            },
-          };
-        }),
+        ...filterSearchResultFromBilibili(searchNodesV2),
         ...aiNodes.map((node) => {
           return {
             type: "flow-text",
             data: {
-              id: nanoid(),
+              id: getId(),
               dataType: "text",
               created_by: "ai",
               content: node,
@@ -182,14 +261,13 @@ export const useFlowStore = defineStore("flow", {
           return {
             type: node.type,
             data: {
-              id: nanoid(),
+              id: getId(),
               ...node,
               created_by: "search",
             },
           };
         }),
-      ];
-      console.log(this.recommendNodes);
+      ]);
     },
 
     async getAnswer() {

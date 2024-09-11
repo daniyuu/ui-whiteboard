@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-    <div class="sticky-node" @click="handleClick" :style="style">
-        <div class="card-body">
+    <div class="sticky-node" :style="style">
+        <div class="card-body" @click="handleClick">
             <a-textarea ref="textarea" class="input" auto-size v-model:value="data.content" :rows="3"
                 placeholder=""></a-textarea>
         </div>
