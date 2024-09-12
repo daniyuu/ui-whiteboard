@@ -3,6 +3,7 @@
     <flowViewer></flowViewer>
     <div class="operation-layer">
       <div class="left-panel glass-blur" ref="panel">
+        <div class="background-layer"></div>
         <div class="left-panel-header">
           <div class="left-panel-title">Toolbox</div>
           <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
@@ -33,6 +34,7 @@
             </div>
           </div>
         </div>
+        <FlipCard class="fixed-bar tips-bar " :contentList="tips" v-if="tips.length > 0"></FlipCard>
         <div class="fixed-bar bottom-bar">
           <div class="element-area glass-blur">
             <div class="operation-action-item sticky-button" @click="handelShowPanel">
@@ -120,6 +122,7 @@ import FlowText from "../components/AiTextNode.vue";
 import BilibiliVideo from "../components/BiliBiliVideoNode.vue";
 import { message } from "ant-design-vue";
 import MakedownViewer from "../components/MakedownViewer.vue";
+import FlipCard from "../components/flipCard.vue";
 import { handleGetImage2Base64 } from "../utils/file";
 const { capture } = useScreenshot();
 defineOptions({
@@ -134,6 +137,9 @@ defineOptions({
 onUnmounted(() => {
   document.removeEventListener("click", handleStickyPanelClose);
   flowStore.ref = null
+});
+const tips = computed(() => {
+  return flowStore.tips || []
 });
 const showSummaryPanel = ref(false);
 const summaryPanelLoading = ref(false);
@@ -277,16 +283,13 @@ watch(
 </script>
 <style lang="less" scoped>
 .glass-blur {
-  background-color: rgba(255, 255, 255, 0.616);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  border-radius: 12px;
-  -webkit-border-radius: 12px;
-  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
 }
 
 .main-wrapper {
@@ -306,8 +309,20 @@ watch(
       pointer-events: all;
       height: 100%;
       overflow: hidden;
+      position: relative;
       transition: ease-in-out 0.4s;
       box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+
+      .background-layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0.2;
+        background: radial-gradient(at 18.705910674999203% 15.134840861604705%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 30.8112932366015% 75.6261221183719%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 1) 0%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 0) 100%), radial-gradient(at 38.48423830104502% 52.722552418335056%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 39.331314657444636% 12.077087191487678%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 1) 0%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 0) 100%), radial-gradient(at 87.37161537120681% 96.82127143816406%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 20.24758766249022% 10.69159510369133%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 52.693155228548584% 91.56020068404615%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 1) 0%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 0) 100%), radial-gradient(at 39.31237042190552% 82.475962981231%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 0.23338540354438386% 66.36092039470142%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 1) 0%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 0) 100%), radial-gradient(at 90.00899614523834% 37.55841078794306%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 69.53998133542414% 22.788540970406835%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 0) 100%);
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
 
       .left-panel-header {
         height: 64px;
@@ -316,6 +331,7 @@ watch(
         justify-content: space-between;
         align-items: center;
         box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.1);
+        background: #ffffffb6;
 
         .close-btn {
           margin-right: 8px;
@@ -336,6 +352,10 @@ watch(
         overflow: auto;
         padding: 8px 0px;
         position: relative;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
 
         .node-area {
           height: calc(100vh - 140px);
@@ -368,6 +388,10 @@ watch(
       position: relative;
       overflow: hidden;
 
+      .tips-bar {
+        top: 20px;
+        right: 24px;
+      }
 
       .fixed-bar {
         pointer-events: all;

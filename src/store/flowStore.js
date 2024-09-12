@@ -98,6 +98,8 @@ export const useFlowStore = defineStore("flow", {
       edges: [],
       recommendNodes: [
       ],
+      tips: [
+      ],
       originalData: {},
       name: "",
       avatar: "",
@@ -222,15 +224,18 @@ export const useFlowStore = defineStore("flow", {
 
     async fetchNewNodes() {
       await this.saveFlow();
+      this.recommendNodes = []
+      this.tips = []
       const promises = [
         getNewFormNodes(this.id),
         getNewSearchNodesV2(this.id),
         getNewAINodes(this.id),
       ];
-      const [formNodes, searchNodesV2, aiNodes] = await Promise.all(
+      const [formNodes, searchNodesV2, tipsNode] = await Promise.all(
         promises
       );
-      console.log(formNodes, searchNodesV2, aiNodes);
+      console.log(formNodes, searchNodesV2, tipsNode);
+      this.tips = tipsNode
       this.recommendNodes = _.shuffle([
         ...formNodes.map((node) => {
           return {
@@ -246,17 +251,6 @@ export const useFlowStore = defineStore("flow", {
           };
         }),
         ...filterSearchResultFromBilibili(searchNodesV2),
-        ...aiNodes.map((node) => {
-          return {
-            type: "flow-text",
-            data: {
-              id: getId(),
-              dataType: "text",
-              created_by: "ai",
-              content: node,
-            },
-          };
-        }),
         ..._.map(searchNodesV2, (node) => {
           return {
             type: node.type,

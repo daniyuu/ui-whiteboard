@@ -20,8 +20,8 @@
       <template #node-image="props">
         <ImageNode :data="props.data" />
       </template>
-      <DropzoneBackground class="background" :style="{
-        backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
+      <DropzoneBackground class="bg" :style="{
+        backgroundColor: isDragOver ? '#e7f3ff' : '#F0F7F9',
         transition: 'background-color 0.2s ease',
       }">
         <p v-if="isDragOver">Drop here</p>
@@ -85,8 +85,9 @@ onNodesChange(async (changes) => {
   width: 100%;
 }
 
-.background {
+.bg {
   width: 100%;
   height: 100%;
+  background: #b8b8b8;
 }
 </style>

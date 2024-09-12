@@ -9,18 +9,19 @@
                 <h2 class="section-title"> Your designs</h2>
             </div>
             <div class="card-container">
-                <div class="new-whiteboard-card card" @click="create()">
+                <div class="new-whiteboard-card card glass-blur" @click="create()">
                     <i class="bi bi-plus-circle new-icon"></i>
                     <div class="new-title">New Whiteboard</div>
                 </div>
-                <div class="card" v-for="item in whiteboardData" :key="item.title" @click="handleJumpToFlow(item)">
+                <div class="card glass-blur" v-for="item in whiteboardData" :key="item.title"
+                    @click="handleJumpToFlow(item)">
                     <div class="card-prevew">
                         <img style="width: 100%;" :src="_.get(item.ui_attributes, 'avatar')" />
                     </div>
                     <div class="card-info-bar">
                         <div class="card-info-left-side">
                             <div class="card-title">{{ item.title }}</div>
-                            <div class="card-date">Edited: {{ item.updated_at }}</div>
+                            <div class="card-date">Edited: {{ formateDate(item.updated_at) }}</div>
                         </div>
                         <div class="card-info-right-side">
                             <div class="card-action">
@@ -60,9 +61,15 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
 import _ from 'lodash'
+import dayjs from 'dayjs';
 // eslint-disable-next-line no-unused-vars
 import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
 
+// data formate 2024-09-11T20:19:46.372925
+// return 2024-09-11：20:19:46
+function formateDate(date) {
+    return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+}
 
 const whiteboardData = ref()
 let creating = false
@@ -109,10 +116,21 @@ const handleRename = () => {
 
 </script>
 <style lang="less" scoped>
+.glass-blur {
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+}
+
 .home-page {
     width: 100%;
     height: 100%;
     padding: 20px;
+    background: radial-gradient(at 60.91943048444464% 67.25132393864972%, rgb(248, 174, 187) 0%, hsla(350, 86.30136986301372%, 71.37254901960785%, 0) 100%), radial-gradient(at 20.813307850091746% 20.526027905116216%, rgb(203, 245, 215) 0%, hsla(137.4757281553398, 89.56521739130436%, 77.45098039215685%, 0) 100%), radial-gradient(at 85.20085739947811% 65.19070998593959%, rgb(185, 157, 247) 0%, hsla(259.04761904761904, 86.30136986301372%, 71.37254901960785%, 0) 100%), radial-gradient(at 48.40531420662355% 43.233486276867694%, hsla(350, 86.30136986301372%, 71.37254901960785%, 1) 0%, hsla(350, 86.30136986301372%, 71.37254901960785%, 0) 100%), radial-gradient(at 26.24165986272784% 4.799166678461408%, hsla(137.4757281553398, 89.56521739130436%, 77.45098039215685%, 1) 0%, hsla(137.4757281553398, 89.56521739130436%, 77.45098039215685%, 0) 100%), radial-gradient(at 11.950269221014631% 82.14889471799577%, hsla(259.04761904761904, 86.30136986301372%, 71.37254901960785%, 1) 0%, hsla(259.04761904761904, 86.30136986301372%, 71.37254901960785%, 0) 100%);
 
     .banner {
         width: 100%;
@@ -120,7 +138,6 @@ const handleRename = () => {
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #faf6f6;
         border-radius: 16px;
 
         .banner-title {
@@ -155,8 +172,6 @@ const handleRename = () => {
                 position: relative;
                 width: 300px;
                 height: 200px;
-                background-color: #fffcfc;
-                ;
                 margin-bottom: 12px;
                 border-radius: 8px;
                 box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
@@ -165,7 +180,8 @@ const handleRename = () => {
                 .card-prevew {
                     width: 100%;
                     height: 140px;
-                    background-color: #fffcfc;
+                    overflow: hidden;
+                    background: #ffffffa9;
                 }
 
                 .card-info-bar {
@@ -175,7 +191,7 @@ const handleRename = () => {
                     justify-content: space-between;
                     padding: 0px 12px;
                     height: 60px;
-                    background: #fff;
+                    background: rgba(255, 255, 255, 0.305);
                     box-shadow: 0px 0px 11px 1px rgba(0, 0, 0, 0.1);
 
                     align-items: center;

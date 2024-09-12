@@ -24,20 +24,18 @@ const style = computed(() => {
     return {
         width: '300px',
         height: '300px',
+        background: props.data.backgroundColor || "#FFFFFF"
     }
 })
 const handleClick = () => {
     textarea.value.focus()
 }
 
-const backgroundColor = computed(() => {
-    return props.data.backgroundColor || "#FFFFFF"
-})
+
 
 </script>
 <style scoped lang="less">
 .sticky-node {
-    background-color: v-bind(backgroundColor);
     border-radius: 4px;
     overflow: hidden;
     padding: 0px;

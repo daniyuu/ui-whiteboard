@@ -21,6 +21,13 @@ const mHhtml = computed(() => {
 })
 
 </script>
+<style lang="less">
+.markdown-viewer {
+    p {
+        margin-bottom: 0;
+    }
+}
+</style>
 
 <style lang="less" scoped>
 .codeWrapper {
