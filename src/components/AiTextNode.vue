@@ -5,14 +5,15 @@
       <div class="options">
         <span>Disable</span> <a-switch size="small" v-model:checked="data.disabled" />
       </div>
-      <MakedownViewer :text="data.content"></MakedownViewer>
+      <MarkdownViewer :text="data.content">
+      </MarkdownViewer>
     </div>
   </div>
 </template>
 <script setup>
 import { computed } from 'vue'
-import MakedownViewer
-  from './MakedownViewer.vue';
+import MarkdownViewer
+  from './MarkdownViewer.vue';
 const props = defineProps({
   data: {
     type: Object,

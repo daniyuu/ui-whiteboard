@@ -121,8 +121,9 @@ import FlowForm from "../components/FlowFormNode.vue";
 import FlowText from "../components/AiTextNode.vue";
 import BilibiliVideo from "../components/BiliBiliVideoNode.vue";
 import { message } from "ant-design-vue";
-import MakedownViewer from "../components/MakedownViewer.vue";
 import FlipCard from "../components/flipCard.vue";
+import SearchWeb from "../components/SearchWebNode.vue";
+
 import { handleGetImage2Base64 } from "../utils/file";
 const { capture } = useScreenshot();
 defineOptions({
@@ -131,7 +132,8 @@ defineOptions({
     FlowForm,
     FlowText,
     BilibiliVideo,
-    MakedownViewer,
+    SearchWeb,
+    FlipCard,
   },
 });
 onUnmounted(() => {

@@ -22,9 +22,9 @@ import {
   getAnswer,
 } from "../api";
 
-function filterSearchResultFromBilibili(searchList, max = 2) {
+function filterSearchResultFromBilibili(searchList = [], max = 2) {
   const nodes = []
-  searchList.forEach((item) => {
+  _.forEach(searchList, (item) => {
     console.log(item);
     const { url, name, type } = item;
     if (type !== 'search-video') return
@@ -35,13 +35,43 @@ function filterSearchResultFromBilibili(searchList, max = 2) {
       nodes.push({
         type: "bilibili-video",
         data: {
-          id: nanoid(),
+          id: getId(),
           name,
           bvid,
           created_by: "search",
         },
       });
     }
+  });
+  return nodes.slice(0, max);
+}
+
+function getDomain(url) {
+  const a = document.createElement("a");
+  a.href = url;
+  return a.hostname;
+}
+
+function filterSearchResultFromWeb(searchList = [], max = 2) {
+  const nodes = []
+  _.forEach(searchList, (item) => {
+    const { url, name, type, snippet } = item;
+    const domain = getDomain(url);
+    if (type !== 'search-webPage') return
+    nodes.push({
+      type: "search-web",
+      data: {
+        id: getId(),
+        name,
+        domain,
+        url,
+        snippet,
+        content: snippet,
+        type: "web",
+        icon: 'https://www.google.com/s2/favicons?domain=' + domain,
+        created_by: "search",
+      },
+    });
   });
   return nodes.slice(0, max);
 }
@@ -250,6 +280,7 @@ export const useFlowStore = defineStore("flow", {
             },
           };
         }),
+        ...filterSearchResultFromWeb(searchNodesV2),
         ...filterSearchResultFromBilibili(searchNodesV2),
         ..._.map(searchNodesV2, (node) => {
           return {

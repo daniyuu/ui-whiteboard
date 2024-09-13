@@ -20,6 +20,9 @@
       <template #node-image="props">
         <ImageNode :data="props.data" />
       </template>
+      <template #node-search-web="props">
+        <SearchWebNode :data="props.data" />
+      </template>
       <DropzoneBackground class="bg" :style="{
         backgroundColor: isDragOver ? '#e7f3ff' : '#F0F7F9',
         transition: 'background-color 0.2s ease',
@@ -42,6 +45,8 @@ import useDragAndDrop from "./useDargAndDrop";
 import StickyNode from "./StickyNode.vue";
 import FlowSelectNode from "./FlowSelectNode.vue";
 import ImageNode from "./ImageNode.vue";
+import SearchWebNode from "../components/SearchWebNode.vue";
+
 
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 
