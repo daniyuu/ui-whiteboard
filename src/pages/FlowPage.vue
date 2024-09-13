@@ -99,7 +99,7 @@
             <i class="bi bi-x close-btn" @click="handleCloseSummaryPanel"></i>
           </div>
           <div class="summary-content">
-            <makedown-viewer :text="summaryContent"></makedown-viewer>
+            <markdown-viewer :text="summaryContent"></markdown-viewer>
           </div>
           <a-button type="primary" class="generate-summary-btn" @click="handleGenerateSummary"
             :loading="summaryPanelLoading">Generate</a-button>
@@ -123,7 +123,7 @@ import BilibiliVideo from "../components/BiliBiliVideoNode.vue";
 import { message } from "ant-design-vue";
 import FlipCard from "../components/flipCard.vue";
 import SearchWeb from "../components/SearchWebNode.vue";
-
+import MarkdownViewer from "../components/MarkdownViewer.vue";
 import { handleGetImage2Base64 } from "../utils/file";
 const { capture } = useScreenshot();
 defineOptions({
@@ -248,7 +248,7 @@ const handleScreenShot = () => {
   capture(vueFlowRef.value, { shouldDownload: true });
 };
 const loadingGenerate = ref(false);
-const summaryContent = ref("Summary Content");
+const summaryContent = ref("");
 
 const handleRegenerate = async () => {
   loadingGenerate.value = true;
