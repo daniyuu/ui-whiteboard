@@ -64,6 +64,8 @@ const handleClick = () => {
 
         .search-website {
             display: flex;
+            flex-shrink: 0;
+            flex-grow: 0;
 
             .web-icon {
                 width: 36px;
@@ -91,7 +93,7 @@ const handleClick = () => {
             }
 
             .web-info {
-                flex: 1;
+                width: calc(100% - 36px);
                 font-size: 14px;
 
                 .domain {
@@ -109,6 +111,7 @@ const handleClick = () => {
                     word-break: keep-all;
                     white-space: nowrap;
                     overflow: hidden;
+                    width: 100%;
 
                     a {
                         color: #006621;

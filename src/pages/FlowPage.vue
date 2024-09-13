@@ -366,6 +366,7 @@ watch(
 
           .card-item {
             margin-bottom: 12px;
+            width: 320px;
           }
         }
 
