@@ -24,7 +24,7 @@
                     <div class="card-prevew">
                         <img style="width: 100%;position: relative; top: -80px;" :src="item.icon" />
                     </div>
-                    <div class="card-info-bar">
+                    <div class="card-info-bar" style="line-height: 16px;">
                         {{ item.title }}</div>
                 </div>
             </div>
@@ -128,41 +128,36 @@ function formateDate(date) {
 }
 const template = ref([
     {
-        icon: "/img/food.webp",
-        title: "什么样的饮食搭配有利于健康？推荐一些简单的家庭食谱",
-    }
-    ,
-    {
-        icon: "/img/family.webp",
-        title: "推荐一个适合家庭度假的地方",
-    }
-    ,
-    {
-        icon: "/img/tour.webp",
-        title: "国内外热门旅游景点有哪些",
-    }
-    ,
-    {
-        icon: "/img/tech.webp",
-        title: "全球气候变暖问题 ai未来的发展方向 哪些技术创新正在改变我们的生活",
-    }
-    ,
-    {
-        icon: "/img/game.webp",
-        title: "当前最流行的电子游戏有哪些？",
-    }
-    ,
-    {
-        icon: "/img/computer.webp",
-        title: "我想装一台6000元左右的电脑，配置怎么选？",
+        "icon": "/img/food.webp",
+        "title": "What kind of diet is beneficial for health? Recommend some simple home recipes"
     },
     {
-        icon: "/img/person.webp",
-        title: "如何设定并达成个人目标",
+        "icon": "/img/family.webp",
+        "title": "Recommend a family-friendly vacation spot"
     },
     {
-        icon: "/img/tech1.webp",
-        title: "哪些技术创新正在改变我们的生活？",
+        "icon": "/img/tour.webp",
+        "title": "What are the popular tourist attractions domestically and internationally?"
+    },
+    {
+        "icon": "/img/tech.webp",
+        "title": " and which technological innovations are changing our lives"
+    },
+    {
+        "icon": "/img/game.webp",
+        "title": "What are the most popular video games currently?"
+    },
+    {
+        "icon": "/img/computer.webp",
+        "title": "I want to build a computer for around 6000 yuan, what configuration should I choose?"
+    },
+    {
+        "icon": "/img/person.webp",
+        "title": "How to set and achieve personal goals"
+    },
+    {
+        "icon": "/img/tech1.webp",
+        "title": "Which technological innovations are changing our lives?"
     }
 ])
 function scrollLeft() {
