@@ -1,19 +1,21 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
-    <div class="sticky-node" @click="handleClick":style="style">
-        <div class="card-body">
-            <a-textarea ref="textarea" class="input" auto-size v-model:value="data.content" :rows="3" placeholder="" ></a-textarea>
+    <div class="sticky-node" :style="style">
+        <div class="card-body" @click="handleClick">
+            <a-textarea ref="textarea" class="input" auto-size v-model:value="data.content" :rows="3"
+                placeholder=""></a-textarea>
         </div>
     </div>
 </template>
 <script setup>
-import _ from 'lodash'
-import { ref, computed, handleError } from 'vue'
+import { ref, computed } from 'vue'
 const textarea = ref(null)
 const props = defineProps({
     data: {
         type: Object,
         default() {
             return {
+                content: ""
             }
         }
     }
@@ -22,20 +24,18 @@ const style = computed(() => {
     return {
         width: '300px',
         height: '300px',
+        background: props.data.backgroundColor || "#FFFFFF"
     }
 })
 const handleClick = () => {
     textarea.value.focus()
 }
 
-const backgroundColor = computed(() => {
-    return props.data.backgroundColor || "#FFFFFF"
-})
+
 
 </script>
 <style scoped lang="less">
 .sticky-node {
-    background-color: v-bind(backgroundColor);
     border-radius: 4px;
     overflow: hidden;
     padding: 0px;

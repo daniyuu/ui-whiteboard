@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watch } from 'vue'
+import { computed, } from 'vue'
 import markdown from 'markdown-it'
 const props = defineProps({
     text: {
@@ -16,11 +16,18 @@ const md = markdown({
     linkify: true,
     typographer: true
 })
-const mHhtml = computed(()=>{
+const mHhtml = computed(() => {
     return md.render(props.text)
 })
 
 </script>
+<style lang="less">
+.markdown-viewer {
+    p {
+        margin-bottom: 0;
+    }
+}
+</style>
 
 <style lang="less" scoped>
 .codeWrapper {

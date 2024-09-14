@@ -12,9 +12,6 @@ export function useScreenshot() {
     const fileName = options.fileName ?? `vue-flow-screenshot-${Date.now()}`;
 
     switch (options.type) {
-      case 'jpeg':
-        data = await toJpeg(el, options);
-        break;
       case 'png':
         data = await toPng(el, options);
         break;
