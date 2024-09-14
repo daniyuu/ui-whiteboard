@@ -7,9 +7,7 @@ const ContentType = {
   formData: "multipart/form-data",
 };
 
-const baseURL = "http://localhost:8000/";
-
-// const baseURL = "https://mt-whiteboard.azurewebsites.net/"
+const baseURL = "https://mt-whiteboard.azurewebsites.net/";
 
 const axiosInstance = axios.create({
   baseURL,
