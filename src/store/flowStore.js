@@ -152,6 +152,23 @@ export const useFlowStore = defineStore("flow", {
       this.avatar = data.avatar;
       this.flowOptions.onPaneReady((instance) => instance.fitView());
       this.recommendNodes = [];
+      if (this.topic && nodes.length === 0) {
+        this.addNode({
+          type: "sticky",
+          data: {
+            id: getId(),
+            created_by: "user",
+            content: this.topic,
+            backgroundColor: "#cceeff",
+          },
+          position: {
+            x: 150,
+            y: 150,
+          },
+        });
+        this.saveFlow();
+        this.topic = "";
+      }
     },
 
     async saveFlow() {
@@ -261,7 +278,7 @@ export const useFlowStore = defineStore("flow", {
         getNewSearchNodesV2(this.id),
         getNewAINodes(this.id),
       ];
-      const [formNodes, searchNodesV2, tipsNode] = await Promise.all(
+      const [formNodes, [searchNodesV2, summary], tipsNode] = await Promise.all(
         promises
       );
       console.log(formNodes, searchNodesV2, tipsNode);
@@ -276,22 +293,21 @@ export const useFlowStore = defineStore("flow", {
               question: node.question,
               options: node.options,
               created_by: "ai",
-              answer: "",
+              answer: undefined,
             },
           };
         }),
+        {
+          type: "flow-text",
+          data: {
+            id: getId(),
+            dataType: "text",
+            created_by: "ai",
+            content: summary,
+          },
+        },
         ...filterSearchResultFromWeb(searchNodesV2),
         ...filterSearchResultFromBilibili(searchNodesV2),
-        ..._.map(searchNodesV2, (node) => {
-          return {
-            type: node.type,
-            data: {
-              id: getId(),
-              ...node,
-              created_by: "search",
-            },
-          };
-        }),
       ]);
     },
 

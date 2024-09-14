@@ -53,5 +53,5 @@ export async function getNewAINodes(id) {
 
 export async function getNewSearchNodesV2(id) {
   const res = await request.post(`/whiteboard/${id}/search`);
-  return res["search_results"];
+  return [res["search_results"], res['search_results_summary']];
 }

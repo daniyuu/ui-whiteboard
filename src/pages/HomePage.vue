@@ -5,14 +5,37 @@
             <h1 class="banner-title">What will you design today</h1>
         </div>
         <div class="content-area">
-            <div class="section-header">
-                <h2 class="section-title"> Your designs</h2>
+            <div class="arrow arrow-left" @click="scrollLeft" v-if="canLeftScroll">
+                <i class="bi bi-caret-left"></i>
             </div>
-            <div class="card-container">
+            <div class="arrow arrow-right" @click="scrollRight" v-if="canRightScroll">
+                <i class="bi bi-caret-right"></i>
+            </div>
+            <div class="section-header">
+                <h2 class="section-title"> Quick Access</h2>
+            </div>
+            <div class="card-container template" ref="container">
+
                 <div class="new-whiteboard-card card glass-blur" @click="create()">
                     <i class="bi bi-plus-circle new-icon"></i>
                     <div class="new-title">New Whiteboard</div>
                 </div>
+                <div class="card" v-for="item in template " @click="create(item.title)" :key="item">
+                    <div class="card-prevew">
+                        <img style="width: 100%;position: relative; top: -80px;" :src="item.icon" />
+                    </div>
+                    <div class="card-info-bar">
+                        {{ item.title }}</div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="content-area">
+            <div class="section-header">
+                <h2 class="section-title"> Recent</h2>
+            </div>
+            <div class="card-container">
                 <div class="card glass-blur" v-for="item in whiteboardData" :key="item.title"
                     @click="handleJumpToFlow(item)">
                     <div class="card-prevew">
@@ -58,28 +81,112 @@
 
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import _ from 'lodash'
 import dayjs from 'dayjs';
 // eslint-disable-next-line no-unused-vars
 import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
+import { useFlowStore } from "../store/flowStore";
+const flowStore = useFlowStore();
+
+const container = ref(null)
+const canLeftScroll = ref(false)
+const canRightScroll = ref(false)
+
+function checkHasHorizontalScrollBar(el) {
+    setTimeout(() => {
+        if (el) {
+            if (el.scrollWidth > el.clientWidth) {
+                canLeftScroll.value = el.scrollLeft > 0
+                canRightScroll.value = el.scrollLeft < el.scrollWidth - el.clientWidth
+            } else {
+                canLeftScroll.value = false
+                canRightScroll.value = false
+            }
+        }
+    }, 800)
+
+}
+function observerResize(el) {
+    checkHasHorizontalScrollBar(el)
+    console.log(document)
+    window.addEventListener('resize', () => {
+        console.log('resize')
+        checkHasHorizontalScrollBar(el)
+    })
+}
+
+onMounted(() => {
+    observerResize(container.value)
+})
 
 // data formate 2024-09-11T20:19:46.372925
 // return 2024-09-11：20:19:46
 function formateDate(date) {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
 }
+const template = ref([
+    {
+        icon: "/img/food.webp",
+        title: "什么样的饮食搭配有利于健康？推荐一些简单的家庭食谱",
+    }
+    ,
+    {
+        icon: "/img/family.webp",
+        title: "推荐一个适合家庭度假的地方",
+    }
+    ,
+    {
+        icon: "/img/tour.webp",
+        title: "国内外热门旅游景点有哪些",
+    }
+    ,
+    {
+        icon: "/img/tech.webp",
+        title: "全球气候变暖问题 ai未来的发展方向 哪些技术创新正在改变我们的生活",
+    }
+    ,
+    {
+        icon: "/img/game.webp",
+        title: "当前最流行的电子游戏有哪些？",
+    }
+    ,
+    {
+        icon: "/img/computer.webp",
+        title: "我想装一台6000元左右的电脑，配置怎么选？",
+    },
+    {
+        icon: "/img/person.webp",
+        title: "如何设定并达成个人目标",
+    },
+    {
+        icon: "/img/tech1.webp",
+        title: "哪些技术创新正在改变我们的生活？",
+    }
+])
+function scrollLeft() {
+    container.value.scrollLeft -= 332 * 3
+    checkHasHorizontalScrollBar(container.value)
+}
+function scrollRight() {
+    console.log(container.value.scrollLeft)
+    container.value.scrollLeft = parseInt(container.value.scrollLeft) + 332 * 3
+    checkHasHorizontalScrollBar(container.value)
+}
 
 const whiteboardData = ref()
 let creating = false
 
-async function create() {
+async function create(topic) {
     if (creating) return
     const data = await createWhiteBoard({
         name: 'New Whiteboard',
     })
     const id = data.id
+    if (topic) {
+        flowStore.topic = topic
+    }
     router.push('/flow/' + id)
 }
 
@@ -92,7 +199,6 @@ async function fetchWhiteboardData() {
 fetchWhiteboardData()
 
 const handleJumpToFlow = (item) => {
-    console.log(item)
     router.push('/flow/' + item.id)
 }
 
@@ -126,6 +232,30 @@ const handleRename = () => {
     border: 1px solid rgba(255, 255, 255, 0.95);
 }
 
+.arrow {
+    height: 32px;
+    width: 32px;
+    flex: 0 0 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #eeeeee;
+    border-radius: 500%;
+    border: solid 1px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: calc(50% - 8px);
+    z-index: 10000;
+
+}
+
+.arrow-left {
+    left: 0;
+}
+
+.arrow-right {
+    right: -6px;
+}
+
 .home-page {
     width: 100%;
     height: 100%;
@@ -150,6 +280,7 @@ const handleRename = () => {
         padding: 12px;
         margin-top: 24px;
         width: 100%;
+        position: relative;
 
         .section-header {
             font-size: 24px;
@@ -162,16 +293,24 @@ const handleRename = () => {
             }
         }
 
+        .card-wrapper {
+            gap: 32px;
+            margin-top: 12px;
+        }
+
         .card-container {
             display: flex;
             flex-wrap: wrap;
             gap: 32px;
-            margin-top: 24px;
+            margin-top: 12px;
+            scroll-behavior: smooth;
+            flex-shrink: 0;
 
             .card {
                 position: relative;
                 width: 300px;
                 height: 200px;
+                flex-shrink: 0;
                 margin-bottom: 12px;
                 border-radius: 8px;
                 box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
@@ -182,6 +321,7 @@ const handleRename = () => {
                     height: 140px;
                     overflow: hidden;
                     background: #ffffffa9;
+                    flex-grow: 0;
                 }
 
                 .card-info-bar {
@@ -240,6 +380,12 @@ const handleRename = () => {
                     bottom: 28px;
                 }
             }
+        }
+
+        .template {
+            flex-wrap: nowrap;
+            overflow: auto;
+            scrollbar-width: none;
         }
     }
 }

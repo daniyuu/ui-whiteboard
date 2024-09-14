@@ -1,20 +1,25 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div class="ai-text-node" :style="data.disabled ? 'filter: saturate(0%); opacity:0.6' : ''">
-    <div class="card-body">
-      <div class="options">
+    <div class="transition-layer transition-bg " v-if="!compact"></div>
+    <div class="card-body" :style="compact ? 'max-height:300px' : ''">
+      <div class="options" v-if="!compact">
         <span>Disable</span> <a-switch size="small" v-model:checked="data.disabled" />
       </div>
       <MarkdownViewer :text="data.content">
       </MarkdownViewer>
     </div>
+    <div class="mask" v-if="compact"></div>
   </div>
 </template>
 <script setup>
-import { computed } from 'vue'
 import MarkdownViewer
   from './MarkdownViewer.vue';
-const props = defineProps({
+defineProps({
+  compact: {
+    type: Boolean,
+    default: false
+  },
   data: {
     type: Object,
     default() {
@@ -24,12 +29,45 @@ const props = defineProps({
     }
   }
 })
-const themeColor = computed(() => {
-  return props.data.themeColor || "#477ef5"
-})
 
 </script>
 <style scoped lang="less">
+.invert {
+  filter: invert(1);
+}
+
+.transition-layer {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  border-radius: 50%;
+  width: 0px;
+  height: 0px;
+  transform: translate(50%, 50%);
+  transition: ease-in-out 0.3s;
+}
+
+.ai-text-node:hover .transition-layer {
+  height: 285%;
+  width: 285%;
+}
+
+.transition-bg {
+  background: linear-gradient(90deg, #fffbf4, #f8e1ed, #f8faf0);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.transition-filter {}
+
+
+.mask {
+  position: absolute;
+  bottom: 0px;
+  height: 100px;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.486) 0%, rgba(255, 255, 255, 1) 70%);
+}
+
 .options {
   position: absolute;
   top: 6px;
@@ -89,22 +127,22 @@ const themeColor = computed(() => {
 // height: calc(100% + 4px);
 // }
 .ai-text-node {
-
-  border: 2px solid;
-  border-color: v-bind(themeColor);
+  // border: 2px solid;
+  // border-color: v-bind(themeColor);
   border-radius: 8px;
   overflow: hidden;
   padding: 0px;
   min-width: 100px;
-  max-width: 360px;
+  max-width: 600px;
   background: #fff;
+  position: relative;
 
   .card-body {
-    padding: 16px 12px;
+    padding: 16px;
+    margin-top: 12px;
     cursor: pointer;
     position: relative;
-    padding: 10px 20px;
-    background: white;
+    // background: white;
     overflow: hidden;
     border-top-right-radius: 10px;
     border-bottom-left-radius: 10px;
