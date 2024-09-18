@@ -7,6 +7,9 @@ $ yarn dev
 $ open http://localhost:5732/
 ```
 
+### docker-compose
+
+1. docker-compose up -d
 
 
 ### docker build
