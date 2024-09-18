@@ -121,7 +121,7 @@ import FlowForm from "../components/FlowFormNode.vue";
 import FlowText from "../components/AiTextNode.vue";
 import BilibiliVideo from "../components/BiliBiliVideoNode.vue";
 import { message } from "ant-design-vue";
-import FlipCard from "../components/flipCard.vue";
+import FlipCard from "../components/FlipCard.vue";
 import SearchWeb from "../components/SearchWebNode.vue";
 import MarkdownViewer from "../components/MarkdownViewer.vue";
 import { handleGetImage2Base64 } from "../utils/file";
