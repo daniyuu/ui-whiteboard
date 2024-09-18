@@ -23,7 +23,7 @@ const props = defineProps({
 const style = computed(() => {
     return {
         width: '300px',
-        height: '300px',
+        height: '168px',
         background: props.data.backgroundColor || "#FFFFFF"
     }
 })

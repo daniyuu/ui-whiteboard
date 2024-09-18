@@ -1,7 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div class="form-node">
-    <div class="card-title"></div>
     <div class="card-body">
       <div>
         {{ data.question }}
@@ -22,7 +21,7 @@ const props = defineProps({
   }
 })
 const themeColor = computed(() => {
-  return props.data.themeColor || "rgb(204, 238, 255)"
+  return props.data.themeColor || "rgb(204, 28, 255)"
 })
 
 const options = computed(() => {
@@ -38,7 +37,7 @@ const options = computed(() => {
 <style scoped lang="less">
 .form-node {
   background-color: #fff;
-  border: 1px solid v-bind(themeColor);
+  border-left: 4px solid v-bind(themeColor);
   border-radius: 4px;
   width: 320px;
 

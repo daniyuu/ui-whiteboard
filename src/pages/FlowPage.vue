@@ -23,9 +23,9 @@
       <div class="right-side">
         <div class="sticky-bar glass-blur fixed-bar" :class="stickyPanelClose ? 'sticky-panel-close' : ''">
           <div class="sticky-tools--block">
-            <div class="sticky-tools--head">Square (1:1)</div>
+            <div class="sticky-tools--head">rect</div>
             <div class="sticky-tools--wrap">
-              <div class="sticky-sqrt" draggable="true" @dragstart="
+              <div class="sticky-rect" draggable="true" @dragstart="
                 onDragStart($event, 'sticky', {
                   created_by: 'user',
                   backgroundColor: item.background,
@@ -375,7 +375,7 @@ watch(
           height: 48px;
           position: absolute;
           bottom: 0;
-          background-color: #013979;
+          background: radial-gradient(at 18.935008489173555% 85.1487924492224%, rgb(41, 42, 104) 0%, hsla(317.8947368421052, 77.02702702702705%, 70.98039215686275%, 0) 100%), radial-gradient(at 54.26012646970457% 34.00307269649476%, rgb(20, 130, 177) 0%, hsla(197.89473684210526, 77.02702702702705%, 70.98039215686275%, 0) 100%), radial-gradient(at 1.763993334609415% 52.90930722080589%, rgb(42, 53, 116) 0%, hsla(317.8947368421052, 77.02702702702705%, 70.98039215686275%, 0) 100%);
           color: #fff;
           margin-bottom: 8px;
           border-radius: 4px;
@@ -466,14 +466,14 @@ watch(
             gap: 12px;
             margin-top: 12px;
 
-            .sticky-sqrt {
+            .sticky-rect {
               width: 36px;
-              height: 36px;
+              height: 24px;
               box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.1);
               transition: ease-in-out 0.2s;
             }
 
-            .sticky-sqrt:hover {
+            .sticky-rect:hover {
               margin-top: -4px;
             }
           }

@@ -43,7 +43,7 @@ defineProps({
     display: block;
     color: #fff;
     padding: 2px 24px 0 12px;
-    background-color: rgb(250, 72, 146);
+    background-color: rgb(72, 164, 250);
     width: 320px;
     line-height: 28px;
     height: 28px;

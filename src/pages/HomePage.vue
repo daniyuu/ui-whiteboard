@@ -35,7 +35,7 @@
             <div class="section-header">
                 <h2 class="section-title"> Recent</h2>
             </div>
-            <div class="card-container">
+            <div class="card-container card-recent" style="overflow: auto;">
                 <div class="card glass-blur" v-for="item in whiteboardData" :key="item.title"
                     @click="handleJumpToFlow(item)">
                     <div class="card-prevew">
@@ -303,7 +303,7 @@ const handleRename = () => {
 
             .card {
                 position: relative;
-                width: 300px;
+                width: 320px;
                 height: 200px;
                 flex-shrink: 0;
                 margin-bottom: 12px;
@@ -375,6 +375,10 @@ const handleRename = () => {
                     bottom: 28px;
                 }
             }
+        }
+
+        .card-recent {
+            height: calc(100vh - 600px);
         }
 
         .template {
