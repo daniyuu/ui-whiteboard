@@ -33,6 +33,7 @@ defineProps({
   border-radius: 4px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0px 3px 12px 3px rgba(0, 0, 0, 0.1);
 
   .bilibili-header {
 
@@ -43,7 +44,7 @@ defineProps({
     display: block;
     color: #fff;
     padding: 2px 24px 0 12px;
-    background-color: rgb(72, 164, 250);
+    background-color: rgb(250, 117, 172);
     width: 320px;
     line-height: 28px;
     height: 28px;
@@ -51,7 +52,7 @@ defineProps({
 
   .bilibili-video {
     position: relative;
-    border: solid 1px rgb(255, 37, 128);
+    // border: solid 1px rgb(250, 117, 172);
     width: 320px;
     height: 180px;
 

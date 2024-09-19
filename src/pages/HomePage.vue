@@ -35,6 +35,7 @@
             <div class="section-header">
                 <h2 class="section-title"> Recent</h2>
             </div>
+            <loading-skeleton v-if="!whiteboardData" />
             <div class="card-container card-recent" style="overflow: auto;">
                 <div class="card glass-blur" v-for="item in whiteboardData" :key="item.title"
                     @click="handleJumpToFlow(item)">
@@ -88,6 +89,8 @@ import dayjs from 'dayjs';
 // eslint-disable-next-line no-unused-vars
 import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
 import { useFlowStore } from "../store/flowStore";
+import LoadingSkeleton from '../components/LoadingSkeleton.vue';
+
 const flowStore = useFlowStore();
 
 const container = ref(null)

@@ -148,7 +148,7 @@ const summaryPanelLoading = ref(false);
 const stickyPanelClose = ref(true);
 const stickySqrt = ref([
   {
-    background: "rgb(251, 247, 192)",
+    background: "#FFEEA9",
   },
   {
     background: "#cceeff",
@@ -372,10 +372,11 @@ watch(
 
         .regenerate-btn {
           width: calc(100% - 16px);
-          height: 48px;
+          height: 40px;
           position: absolute;
           bottom: 0;
-          background: radial-gradient(at 18.935008489173555% 85.1487924492224%, rgb(41, 42, 104) 0%, hsla(317.8947368421052, 77.02702702702705%, 70.98039215686275%, 0) 100%), radial-gradient(at 54.26012646970457% 34.00307269649476%, rgb(20, 130, 177) 0%, hsla(197.89473684210526, 77.02702702702705%, 70.98039215686275%, 0) 100%), radial-gradient(at 1.763993334609415% 52.90930722080589%, rgb(42, 53, 116) 0%, hsla(317.8947368421052, 77.02702702702705%, 70.98039215686275%, 0) 100%);
+
+          background: #EB5B00;
           color: #fff;
           margin-bottom: 8px;
           border-radius: 4px;
@@ -590,6 +591,12 @@ watch(
           margin-top: 16px;
           margin-bottom: 20px;
 
+        }
+
+        .generate-summary-btn {
+          background: #EB5B00;
+          height: 40px;
+          border-radius: 4px;
         }
       }
 

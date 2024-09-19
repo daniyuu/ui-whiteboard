@@ -159,7 +159,7 @@ export const useFlowStore = defineStore("flow", {
             id: getId(),
             created_by: "user",
             content: this.topic,
-            backgroundColor: "#cceeff",
+            backgroundColor: "#FFEEA9",
           },
           position: {
             x: 150,

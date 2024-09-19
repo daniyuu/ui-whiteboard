@@ -21,7 +21,7 @@ const props = defineProps({
   }
 })
 const themeColor = computed(() => {
-  return props.data.themeColor || "rgb(204, 28, 255)"
+  return props.data.themeColor || "#FFBF78"
 })
 
 const options = computed(() => {

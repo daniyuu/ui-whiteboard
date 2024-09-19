@@ -55,7 +55,7 @@ const style = computed(() => {
     padding: 4px;
     min-width: 100px;
     min-height: 60px;
-    padding: 16px;
+    padding: 8px;
     box-shadow: #ccc 1px 1px 20px 2px;
 
     .card-body {
