@@ -19,7 +19,9 @@ import {
   getNewFormNodes,
   getNewSearchNodesV2,
   getNewAINodes,
+  // eslint-disable-next-line no-unused-vars
   getAnswer,
+  getAnswerStream,
 } from "../api";
 
 function filterSearchResultFromBilibili(searchList = [], max = 2) {
@@ -29,18 +31,23 @@ function filterSearchResultFromBilibili(searchList = [], max = 2) {
     const { url, name, type } = item;
     if (type !== 'search-video') return
     if (url.includes("bilibili")) {
-      const bvid = url.split("/")
-        .filter((item) => item.includes("BV"))[0]
-        .split("?")[0];
-      nodes.push({
-        type: "bilibili-video",
-        data: {
-          id: getId(),
-          name,
-          bvid,
-          created_by: "search",
-        },
-      });
+      try {
+        const bvid = url.split("/")
+          .filter((item) => item.includes("BV"))[0]
+          .split("?")[0];
+        nodes.push({
+          type: "bilibili-video",
+          data: {
+            id: getId(),
+            name,
+            bvid,
+            created_by: "search",
+          },
+        });
+      } catch (e) {
+        console.log(e, url)
+      }
+
     }
   });
   return nodes.slice(0, max);
@@ -126,6 +133,7 @@ export const useFlowStore = defineStore("flow", {
       id: "",
       nodes: [],
       edges: [],
+      answer: "",
       recommendNodes: [
       ],
       tips: [
@@ -270,8 +278,8 @@ export const useFlowStore = defineStore("flow", {
     },
 
     async fetchNewNodes() {
-      await this.saveFlow();
       this.recommendNodes = []
+      await this.saveFlow();
       this.tips = []
       const promises = [
         getNewFormNodes(this.id),
@@ -311,9 +319,8 @@ export const useFlowStore = defineStore("flow", {
       ]);
     },
 
-    async getAnswer() {
-      const answer = await getAnswer(this.id);
-      return answer;
+    async getAnswer(handle) {
+      await getAnswerStream(this.id, handle);
     },
   },
 });

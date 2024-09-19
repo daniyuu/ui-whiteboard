@@ -1,4 +1,4 @@
-import request from "../utils/http/axios";
+import { axiosInstance as request, baseURL } from "../utils/http/axios";
 
 export async function createWhiteBoard(params) {
   const res = await request.post("/whiteboard/create", params);
@@ -44,6 +44,34 @@ export async function getNewSearchNodes(id) {
 export async function getAnswer(id) {
   const res = await request.post(`/whiteboard/${id}/answer`);
   return res["answer"];
+}
+
+export async function getAnswerStream(id, handle) {
+  const url = baseURL + `whiteboard/${id}/answer_streaming`;
+
+  const response = await fetch(
+    url,
+    {
+      method: 'post',
+      responseType: 'stream'
+    }
+  )
+  const reader = response.body.getReader()
+  if (response.status !== 200) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  let decoder = new TextDecoder()
+  let buffer = ''
+  let done = false
+  while (!done) {
+    const { value, done: done_ } = await reader.read()
+    done = done_
+    buffer += decoder.decode(value, { stream: true })
+    if (handle instanceof Function) {
+      handle(buffer)
+    }
+  }
+  return buffer
 }
 
 export async function getNewAINodes(id) {

@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-    <div class="image-node">
+    <div class="image-node card-wrapper">
         <div class="card-body">
             <img :src="data.url" :style="style" />
         </div>
@@ -8,6 +8,8 @@
 </template>
 <script setup>
 import { ref, computed, watch } from 'vue'
+import './card-style.less'
+
 // eslint-disable-next-line no-unused-vars
 const props = defineProps({
     data: {

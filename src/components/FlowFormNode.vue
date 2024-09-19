@@ -1,14 +1,16 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  <div class="form-node">
+  <div class="form-node card-wrapper">
     <div class="card-body">
       <div>{{ data.question }}</div>
-      <a-input class="input" style="width:100%" v-model:value="data.answer" />
+      <a-input class="input" placeholder="Please Input" style="width:100%" v-model:value="data.answer" />
     </div>
   </div>
 </template>
 <script setup>
 import { computed } from 'vue'
+import './card-style.less'
+
 const props = defineProps({
   data: {
     type: Object,
@@ -25,10 +27,9 @@ const themeColor = computed(() => {
 
 <style scoped lang="less">
 .form-node {
-  background-color: #fff;
   border-left: 4px solid v-bind(themeColor);
-  border-radius: 4px;
   width: 320px;
+  background: #fff;
 
   .card-body {
     padding: 12px;

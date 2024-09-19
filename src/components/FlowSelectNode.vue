@@ -1,16 +1,19 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  <div class="form-node">
+  <div class="form-node card-wrapper">
     <div class="card-body">
       <div>
         {{ data.question }}
       </div>
-      <a-select class="input" mode="tags" style="width: 100%;" v-model:value="data.answer" :options="options" />
+      <a-select class="input" mode="tags" placeholder="Please Select Value" style="width: 100%;"
+        v-model:value="data.answer" :options="options" />
     </div>
   </div>
 </template>
 <script setup>
 import { computed } from 'vue'
+import './card-style.less'
+
 import _ from 'lodash'
 const props = defineProps({
   data: {

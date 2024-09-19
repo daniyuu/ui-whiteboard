@@ -1,20 +1,22 @@
 <template>
-  <div class="bilibili-node">
+  <div class="bilibili-node card-wrapper">
 
     <div class="bilibili-header">
       <img src="/img/video.svg" width="20px" style="margin-top: -4px; margin-right: 4px;" />
       {{ data.name }}
     </div>
     <div class="bilibili-video">
-      <iframe
+      <iframe style="border: none; " frameborder="0"
         :src="`//player.bilibili.com/player.html?isOutside=true&aid=${data.aid}&bvid=${data.bvid}&cid=${data.cid}&page=1&autoplay=0`"
-        auto="false" scrolling="yes" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+        auto="false" scrolling="yes" border="0" framespacing="0" allowfullscreen="true"></iframe>
 
     </div>
   </div>
 
 </template>
 <script setup>
+import './card-style.less'
+
 defineProps({
   data: {
     type: Object,
