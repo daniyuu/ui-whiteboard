@@ -35,7 +35,8 @@
             <div class="section-header">
                 <h2 class="section-title"> Recent</h2>
             </div>
-            <div class="card-container">
+            <loading-skeleton v-if="!whiteboardData" />
+            <div class="card-container card-recent" style="overflow: auto;">
                 <div class="card glass-blur" v-for="item in whiteboardData" :key="item.title"
                     @click="handleJumpToFlow(item)">
                     <div class="card-prevew">
@@ -88,6 +89,8 @@ import dayjs from 'dayjs';
 // eslint-disable-next-line no-unused-vars
 import { createWhiteBoard, updateWhiteBoard, deleteWhiteBoard, getWhiteBoardList } from '../api';
 import { useFlowStore } from "../store/flowStore";
+import LoadingSkeleton from '../components/LoadingSkeleton.vue';
+
 const flowStore = useFlowStore();
 
 const container = ref(null)
@@ -303,7 +306,7 @@ const handleRename = () => {
 
             .card {
                 position: relative;
-                width: 300px;
+                width: 320px;
                 height: 200px;
                 flex-shrink: 0;
                 margin-bottom: 12px;
@@ -375,6 +378,10 @@ const handleRename = () => {
                     bottom: 28px;
                 }
             }
+        }
+
+        .card-recent {
+            height: calc(100vh - 600px);
         }
 
         .template {

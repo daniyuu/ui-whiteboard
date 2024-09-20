@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-    <div class="search-node">
+    <div class="search-node card-wrapper">
         <div class="card-body" @click="handleClick">
             <div class="search-website">
                 <div class="web-icon">
@@ -23,6 +23,8 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+import './card-style.less'
+
 const textarea = ref(null)
 defineProps({
     data: {

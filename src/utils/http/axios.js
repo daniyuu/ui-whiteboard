@@ -7,9 +7,9 @@ const ContentType = {
   formData: "multipart/form-data",
 };
 
-const baseURL = "https://mt-whiteboard.azurewebsites.net/";
+export const baseURL = "https://mt-whiteboard.azurewebsites.net/";
 
-const axiosInstance = axios.create({
+export const axiosInstance = axios.create({
   baseURL,
   timeout: 3600 * 1000,
   responseType: "json",
@@ -65,4 +65,3 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;

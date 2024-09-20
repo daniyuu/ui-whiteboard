@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-    <div class="sticky-node" :style="style">
+    <div class="sticky-node card-wrapper" :style="style">
         <div class="card-body" @click="handleClick">
             <a-textarea ref="textarea" class="input" auto-size v-model:value="data.content" :rows="3"
                 placeholder=""></a-textarea>
@@ -9,6 +9,8 @@
 </template>
 <script setup>
 import { ref, computed } from 'vue'
+import './card-style.less'
+
 const textarea = ref(null)
 const props = defineProps({
     data: {
@@ -23,7 +25,7 @@ const props = defineProps({
 const style = computed(() => {
     return {
         width: '300px',
-        height: '300px',
+        height: '168px',
         background: props.data.backgroundColor || "#FFFFFF"
     }
 })

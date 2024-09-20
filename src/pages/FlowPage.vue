@@ -9,7 +9,7 @@
           <i class="bi bi-x close-btn" @click="handleClosePanel"></i>
         </div>
         <div class="left-panel-body">
-          <a-spin :spinning="loadingGenerate" style="width: 100%" />
+          <LoadingCard v-if="loadingGenerate"></LoadingCard>
           <div class="node-area" draggable="false">
             <div draggable="false"></div>
             <component style="box-shadow: none" class="card-item" draggable="true"
@@ -23,9 +23,9 @@
       <div class="right-side">
         <div class="sticky-bar glass-blur fixed-bar" :class="stickyPanelClose ? 'sticky-panel-close' : ''">
           <div class="sticky-tools--block">
-            <div class="sticky-tools--head">Square (1:1)</div>
+            <div class="sticky-tools--head">rect</div>
             <div class="sticky-tools--wrap">
-              <div class="sticky-sqrt" draggable="true" @dragstart="
+              <div class="sticky-rect" draggable="true" @dragstart="
                 onDragStart($event, 'sticky', {
                   created_by: 'user',
                   backgroundColor: item.background,
@@ -99,7 +99,8 @@
             <i class="bi bi-x close-btn" @click="handleCloseSummaryPanel"></i>
           </div>
           <div class="summary-content">
-            <markdown-viewer :text="summaryContent"></markdown-viewer>
+            <LoadingArticle v-if="summaryPanelLoading"></LoadingArticle>
+            <markdown-viewer v-else :text="summaryContent"></markdown-viewer>
           </div>
           <a-button type="primary" class="generate-summary-btn" @click="handleGenerateSummary"
             :loading="summaryPanelLoading">Generate</a-button>
@@ -125,6 +126,8 @@ import FlipCard from "../components/FlipCard.vue";
 import SearchWeb from "../components/SearchWebNode.vue";
 import MarkdownViewer from "../components/MarkdownViewer.vue";
 import { handleGetImage2Base64 } from "../utils/file";
+import LoadingCard from "../components/LoadingCard.vue";
+import LoadingArticle from "../components/LoadingArticle.vue";
 const { capture } = useScreenshot();
 defineOptions({
   components: {
@@ -148,7 +151,7 @@ const summaryPanelLoading = ref(false);
 const stickyPanelClose = ref(true);
 const stickySqrt = ref([
   {
-    background: "rgb(251, 247, 192)",
+    background: "#FFEEA9",
   },
   {
     background: "#cceeff",
@@ -257,11 +260,13 @@ const handleRegenerate = async () => {
 };
 
 const handleGenerateSummary = async () => {
+  const handle = (buffer) => {
+    summaryContent.value = buffer;
+    summaryPanelLoading.value = false;
+  }
   showSummaryPanel.value = true;
   summaryPanelLoading.value = true;
-  const answer = await flowStore.getAnswer();
-  summaryContent.value = answer;
-  summaryPanelLoading.value = false;
+  await flowStore.getAnswer(handle);
 };
 
 const handleCloseSummaryPanel = () => {
@@ -270,7 +275,7 @@ const handleCloseSummaryPanel = () => {
 
 function setPanel(open) {
   if (open) {
-    panel.value.style.width = "342px";
+    panel.value.style.width = "352px";
   } else {
     panel.value.style.width = "0px";
 
@@ -320,7 +325,7 @@ watch(
         left: 0;
         top: 0;
         opacity: 0.2;
-        background: radial-gradient(at 18.705910674999203% 15.134840861604705%, rgb(252, 209, 207) 0%, hsla(3, 92%, 85%, 0) 100%), radial-gradient(at 30.8112932366015% 75.6261221183719%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 1) 0%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 0) 100%), radial-gradient(at 38.48423830104502% 52.722552418335056%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(153, 58%, 87%, 0) 100%), radial-gradient(at 39.331314657444636% 12.077087191487678%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 1) 0%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 0) 100%), radial-gradient(at 87.37161537120681% 96.82127143816406%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 20.24758766249022% 10.69159510369133%, rgb(243, 194, 191) 0%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 52.693155228548584% 91.56020068404615%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 1) 0%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 0) 100%), radial-gradient(at 39.31237042190552% 82.475962981231%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 0.23338540354438386% 66.36092039470142%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 1) 0%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 0) 100%), radial-gradient(at 90.00899614523834% 37.55841078794306%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 69.53998133542414% 22.788540970406835%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 0) 100%);
+        background: radial-gradient(at 18.705910674999203% 15.134840861604705%, rgb(252, 209, 207) 0%, hsla(3, 92%, 85%, 0) 100%), radial-gradient(at 30.8112932350015% 75.6261221183719%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 1) 0%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 0) 100%), radial-gradient(at 38.48423830104502% 52.722552418335056%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(153, 58%, 87%, 0) 100%), radial-gradient(at 39.331314657444636% 12.077087191487678%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 1) 0%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 0) 100%), radial-gradient(at 87.37161537120681% 96.82127143816406%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 20.24758766249022% 10.69159510369133%, rgb(243, 194, 191) 0%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 52.693155228548584% 91.56020068404615%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 1) 0%, hsla(46.81318681318682, 60.264900662251655%, 70.3921568627451%, 0) 100%), radial-gradient(at 39.31237042190552% 82.475962981231%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(152.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 0.23338540354438386% 66.36092039470142%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 1) 0%, hsla(188.5106382978723, 90.9677419354839%, 69.6078431372549%, 0) 100%), radial-gradient(at 90.00899614523834% 37.55841078794306%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(212.8421052631579, 88.78504672897198%, 79.01960784313725%, 0) 100%), radial-gradient(at 69.53998133542414% 22.788540970406835%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 1) 0%, hsla(2.526315789473693, 88.78504672897198%, 79.01960784313725%, 0) 100%);
         width: 100%;
         height: 100%;
         z-index: -1;
@@ -348,34 +353,37 @@ watch(
       }
 
       .left-panel-body {
-        width: 342px;
+        width: 352px;
         overflow: hidden;
         height: calc(100% - 64px);
         overflow: auto;
-        padding: 8px 0px;
+        overflow-x: hidden;
         position: relative;
-        justify-content: center;
+        justify-content: top;
         align-items: center;
         display: flex;
         flex-direction: column;
 
         .node-area {
-          height: calc(100vh - 140px);
-          overflow: auto;
-          padding: 4px 8px;
+          height: calc(100vh - 128px);
+          overflow-x: hidden;
+          overflow-y: auto;
+          width: 100%;
+          padding: 16px;
 
           .card-item {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             width: 320px;
           }
         }
 
         .regenerate-btn {
-          width: calc(100% - 16px);
-          height: 48px;
+          width: calc(100% - 32px);
+          height: 40px;
           position: absolute;
           bottom: 0;
-          background-color: #013979;
+
+          background: #EB5B00;
           color: #fff;
           margin-bottom: 8px;
           border-radius: 4px;
@@ -466,14 +474,14 @@ watch(
             gap: 12px;
             margin-top: 12px;
 
-            .sticky-sqrt {
+            .sticky-rect {
               width: 36px;
-              height: 36px;
+              height: 24px;
               box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.1);
               transition: ease-in-out 0.2s;
             }
 
-            .sticky-sqrt:hover {
+            .sticky-rect:hover {
               margin-top: -4px;
             }
           }
@@ -590,6 +598,12 @@ watch(
           margin-top: 16px;
           margin-bottom: 20px;
 
+        }
+
+        .generate-summary-btn {
+          background: #EB5B00;
+          height: 40px;
+          border-radius: 4px;
         }
       }
 
