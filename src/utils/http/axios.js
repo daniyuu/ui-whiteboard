@@ -7,7 +7,8 @@ const ContentType = {
   formData: "multipart/form-data",
 };
 
-export const baseURL = "https://mt-whiteboard.azurewebsites.net/";
+// export const baseURL = "https://mt-whiteboard.azurewebsites.net/";
+export const baseURL = import.meta.env.VITE_BASE_URL;
 
 export const axiosInstance = axios.create({
   baseURL,
@@ -64,4 +65,3 @@ axiosInstance.interceptors.response.use(
     return false;
   }
 );
-
